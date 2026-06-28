@@ -981,38 +981,66 @@
     </div>
     <div class="slide-body">
       <p class="eyebrow">실습 1 · 바이브코딩 · 프롬프트</p>
-      <h2 class="slide-title" style="font-size:clamp(24px,3vw,38px);">Claude 채팅창에 붙여넣기</h2>
-      <div class="prompt-label">📋 프롬프트 1 — 기본 웹사이트 생성</div>
-      <div class="prompt-wrap">
-        <pre class="prompt-box" id="p1a"><span class="comment"># 웹사이트 만들기 요청</span>
+      <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px); margin-bottom:12px;">하나를 골라 Claude 채팅창에 붙여넣기</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:4px;">
 
-저는 대웅제약 AX팀에서 일하고 있습니다.
-우리 팀을 소개하는 <span class="highlight">웹페이지 하나</span>를 만들어주세요.
+        <!-- 주제 1 -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="prompt-label" style="margin:0;">📋 팀 소개 페이지</div>
+          <div class="prompt-wrap" style="flex:1; margin:0;">
+            <pre class="prompt-box" id="p1a" style="font-size:clamp(11px,1.1vw,13px); min-height:180px;">대웅제약 AX팀을 소개하는
+웹페이지를 만들어줘.
 
-조건:
-- 제목: "대웅제약 AX팀 — AI로 일하는 방식을 바꿉니다"
-- 색상: 주황색(#F18A00) 포인트, 흰 배경
-- 내용: 팀 소개, 주요 업무 3가지, 연락처 섹션
-- 깔끔하고 전문적인 디자인
-- HTML 파일 하나로 완성해주세요</pre>
-        <button class="copy-btn" onclick="copyPrompt('p1a', this)">복사</button>
+- 제목: "대웅제약 AX팀
+  AI로 일하는 방식을 바꿉니다"
+- 색상: 주황색(#F18A00) 포인트
+- 섹션: 팀 소개, 주요 업무 3가지,
+  연락처
+- HTML 파일 하나로 완성해줘</pre>
+            <button class="copy-btn" onclick="copyPrompt('p1a', this)">복사</button>
+          </div>
+        </div>
+
+        <!-- 주제 2 -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="prompt-label" style="margin:0;">📋 신제품 소개 페이지</div>
+          <div class="prompt-wrap" style="flex:1; margin:0;">
+            <pre class="prompt-box" id="p1b" style="font-size:clamp(11px,1.1vw,13px); min-height:180px;">대웅제약 신약 펙수클루
+제품 소개 랜딩 페이지를 만들어줘.
+
+- 제목: "펙수클루
+  위식도역류질환의 새로운 선택"
+- 섹션: 제품 특징 3가지,
+  임상 결과 요약, 문의하기
+- 신뢰감 있는 디자인
+- HTML 파일 하나로 완성해줘</pre>
+            <button class="copy-btn" onclick="copyPrompt('p1b', this)">복사</button>
+          </div>
+        </div>
+
+        <!-- 주제 3 -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="prompt-label" style="margin:0;">📋 실적 인포그래픽 페이지</div>
+          <div class="prompt-wrap" style="flex:1; margin:0;">
+            <pre class="prompt-box" id="p1c" style="font-size:clamp(11px,1.1vw,13px); min-height:180px;">대웅제약 2026년 1분기 실적을
+시각적으로 보여주는 페이지를 만들어줘.
+
+- 매출 3,412억 (+8.3%)
+- 영업이익 271억 (-2.1%)
+- ETC 2,104억 / OTC 687억
+  / 수출 621억
+- 숫자 카드·차트 형태로 표현
+- HTML 파일 하나로 완성해줘</pre>
+            <button class="copy-btn" onclick="copyPrompt('p1c', this)">복사</button>
+          </div>
+        </div>
+
       </div>
-      <div class="prompt-label">📋 프롬프트 2 — 내용 수정 (원하는 대로 바꿔보세요)</div>
-      <div class="prompt-wrap">
-        <pre class="prompt-box" id="p1b"><span class="comment"># 수정 요청 — 원하는 부분을 자연스럽게 말하면 됩니다</span>
-
-좋아요! 몇 가지 바꿔주세요:
-- 팀 소개 문구를 좀 더 <span class="highlight">임팩트 있게</span> 수정해주세요
-- 하단에 대웅제약 로고 이미지 자리를 만들어주세요
-- 배경에 은은한 <span class="highlight">그라디언트</span> 효과를 넣어주세요
-- 전체적으로 더 현대적인 느낌으로 개선해주세요</pre>
-        <button class="copy-btn" onclick="copyPrompt('p1b', this)">복사</button>
-      </div>
-      <div class="result-box">
+      <div class="result-box" style="margin-top:12px;">
         <div class="result-title">✅ 결과 확인 방법</div>
         <ul>
           <li>Claude가 HTML 코드 생성 → 코드 위 <strong>"Open in Browser"</strong> 버튼 클릭</li>
-          <li>마음에 들 때까지 말로 수정 요청 가능. 코드는 볼 필요 없습니다.</li>
+          <li>마음에 안 들면 말로 수정 요청. "배경을 더 어둡게 해줘", "섹션을 하나 더 추가해줘" 등</li>
         </ul>
       </div>
     </div>
