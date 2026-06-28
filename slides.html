@@ -1,0 +1,1496 @@
+<!doctype html>
+<title>AI 에이전트 구축 교육 | 대웅 AX TF</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --brand: #F18A00;
+    --pastel: #FFB766;
+    --pastel-light: #FFE8CC;
+    --pastel-bg: #FFF5EC;
+    --pastel-border: #FFD4A0;
+    --text: #1A1A1A;
+    --text-2: #555550;
+    --text-3: #999994;
+    --line: #EDE8E3;
+    --green: #1A6B3C;
+    --green-bg: #E8F5EE;
+    --green-border: #A8D9BC;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, 'Apple SD Gothic Neo', BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SLIDE CONTAINER ── */
+  .deck {
+    position: fixed;
+    inset: 0;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    transform: translateX(60px);
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── SLIDE HEADER (persistent top bar) ── */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    border-bottom: 2px solid var(--pastel-light);
+    flex-shrink: 0;
+    background: var(--white);
+  }
+  .slide-header img { height: 22px; width: auto; }
+  .slide-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── SLIDE BODY ── */
+  .slide-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 80px;
+    overflow: hidden;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 16px;
+  }
+  .slide-title {
+    font-size: clamp(32px, 4.5vw, 56px);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .slide-title span { color: var(--brand); }
+  .slide-subtitle {
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--text-2);
+    line-height: 1.65;
+    max-width: 720px;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards {
+    display: grid;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .cards.col2 { grid-template-columns: 1fr 1fr; }
+  .cards.col3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cards.col4 { grid-template-columns: repeat(4, 1fr); }
+
+  .card {
+    background: var(--pastel-bg);
+    border: 1.5px solid var(--pastel-border);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .card .card-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+  .card .card-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 6px;
+  }
+  .card .card-title {
+    font-size: clamp(15px, 1.6vw, 19px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .card .card-desc {
+    font-size: clamp(13px, 1.3vw, 15px);
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .hbox {
+    background: var(--pastel-bg);
+    border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .hbox p {
+    font-size: clamp(14px, 1.5vw, 17px);
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .hbox strong { color: var(--text); }
+
+  /* ── COMPARE (before/after) ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .compare-box {
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .compare-box.before {
+    background: #F5F5F4;
+    border: 1.5px solid #DDD;
+  }
+  .compare-box.after {
+    background: var(--pastel-bg);
+    border: 1.5px solid var(--pastel-border);
+  }
+  .compare-arrow {
+    text-align: center;
+    font-size: 28px;
+    color: var(--brand);
+  }
+  .compare-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .compare-box.before .compare-label { color: var(--text-3); }
+  .compare-box.after  .compare-label { color: var(--brand); }
+  .compare-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .compare-list li {
+    font-size: clamp(13px, 1.4vw, 16px);
+    color: var(--text-2);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .compare-list li::before {
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: var(--text-3);
+  }
+  .compare-box.after .compare-list li { color: var(--text); }
+  .compare-box.after .compare-list li::before { color: var(--brand); content: "✓"; }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 16px;
+  }
+  .tl-item {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .tl-left {
+    width: 110px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-right: 20px;
+    padding-top: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: 0.04em;
+  }
+  .tl-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 24px;
+  }
+  .tl-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--brand);
+    flex-shrink: 0;
+    margin-top: 18px;
+  }
+  .tl-connector {
+    flex: 1;
+    width: 2px;
+    background: var(--pastel-border);
+    margin: 2px 0;
+  }
+  .tl-item:last-child .tl-connector { display: none; }
+  .tl-content {
+    flex: 1;
+    padding: 10px 0 18px 20px;
+  }
+  .tl-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--brand);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .tl-tag.gray {
+    background: #D0CEC9;
+    color: var(--text-2);
+  }
+  .tl-content strong {
+    display: block;
+    font-size: clamp(14px, 1.5vw, 17px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .tl-content span {
+    font-size: clamp(12px, 1.2vw, 14px);
+    color: var(--text-2);
+  }
+
+  /* ── CODE / COMMAND ── */
+  .cmd {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88em;
+    font-weight: 700;
+    color: var(--green);
+    background: var(--green-bg);
+    border: 1.5px solid var(--green-border);
+    padding: 3px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+  .path {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85em;
+    color: var(--text-2);
+    background: #F2F2F0;
+    border: 1px solid var(--line);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ── FILE TREE ── */
+  .file-tree {
+    background: #1A1A1A;
+    color: #E8E8E6;
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: clamp(13px, 1.4vw, 16px);
+    line-height: 2;
+    margin-top: 20px;
+  }
+  .file-tree .ft-folder { color: #FFB766; }
+  .file-tree .ft-file { color: #A8D9BC; }
+  .file-tree .ft-arrow { color: #888; }
+  .file-tree .ft-cmd { color: #FFE8A0; font-weight: 700; }
+
+  /* ── BIG STAT ── */
+  .big-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .big-num {
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    color: var(--brand);
+    line-height: 1;
+  }
+  .big-unit {
+    font-size: clamp(18px, 2vw, 26px);
+    font-weight: 700;
+    color: var(--text-2);
+  }
+
+  /* ── STEP LIST ── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-text strong {
+    display: block;
+    font-size: clamp(14px, 1.5vw, 17px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .step-text span {
+    font-size: clamp(12px, 1.2vw, 14px);
+    color: var(--text-2);
+  }
+
+  /* ── OUTPUT LIST ── */
+  .output-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .output-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: clamp(14px, 1.5vw, 17px);
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .output-list li .oi {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── TITLE SLIDE SPECIFIC ── */
+  .slide-title-hero {
+    background: linear-gradient(145deg, var(--white) 0%, var(--pastel-bg) 100%);
+  }
+  .slide-title-hero .slide-body {
+    align-items: flex-start;
+    padding-top: 0;
+    padding-bottom: 0;
+    position: relative;
+  }
+  .hero-accent {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--pastel-light) 0%, transparent 70%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* ── NAVIGATION ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1.5px solid var(--pastel-border);
+    border-radius: 40px;
+    padding: 8px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    z-index: 200;
+  }
+  .nav-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--pastel-bg);
+    color: var(--brand);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .nav-btn:hover { background: var(--pastel-light); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .nav-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .nav-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--pastel-border);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: none;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .nav-dot.active {
+    background: var(--brand);
+    transform: scale(1.3);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--brand);
+    transition: width 0.35s ease;
+    z-index: 300;
+  }
+
+  /* ── SLIDE-SPECIFIC BACKGROUNDS ── */
+  .bg-brand {
+    background: var(--brand);
+  }
+  .bg-brand .slide-title,
+  .bg-brand .eyebrow,
+  .bg-brand .slide-subtitle { color: var(--white); }
+  .bg-brand .eyebrow { color: rgba(255,255,255,0.7); }
+  .bg-brand .slide-header {
+    background: transparent;
+    border-bottom-color: rgba(255,255,255,0.2);
+  }
+  .bg-brand .slide-num { color: rgba(255,255,255,0.5); }
+  .bg-brand .slide-header svg path { fill: var(--white) !important; }
+
+  .bg-alt { background: var(--pastel-bg); }
+
+  /* ── UTILITY ── */
+  .mt8  { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .mt24 { margin-top: 24px; }
+  .mb8  { margin-bottom: 8px; }
+  .text-brand { color: var(--brand); }
+  .text-2 { color: var(--text-2); }
+  .fw700 { font-weight: 700; }
+
+  /* ── KEYBOARD HINT ── */
+  .key-hint {
+    position: fixed;
+    bottom: 28px;
+    right: 36px;
+    font-size: 11px;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .key {
+    display: inline-block;
+    background: #F2F2F0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    color: var(--text-2);
+  }
+
+  /* ── SCROLLABLE SLIDE BODY ── */
+  .scrollable .slide-body {
+    overflow-y: auto;
+    justify-content: flex-start;
+    padding-top: 32px;
+    padding-bottom: 80px;
+  }
+  .scrollable .slide-body::-webkit-scrollbar { width: 4px; }
+  .scrollable .slide-body::-webkit-scrollbar-thumb { background: var(--pastel-border); border-radius: 4px; }
+
+  /* ── OS TABS (Windows / Mac) ── */
+  .os-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    margin-top: 4px;
+  }
+  .os-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1.5px solid var(--pastel-border);
+    background: var(--white);
+    font-size: clamp(13px, 1.3vw, 15px);
+    font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .os-tab-btn.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--white);
+  }
+  .os-content { display: none; }
+  .os-content.active { display: block; }
+
+  /* ── PROMPT BOX ── */
+  .prompt-label {
+    font-size: clamp(12px, 1.2vw, 14px);
+    font-weight: 700;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .prompt-wrap {
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .prompt-box {
+    background: #1A1A1A;
+    color: #E8E8E6;
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: clamp(12px, 1.2vw, 14px);
+    line-height: 1.75;
+    white-space: pre-wrap;
+    word-break: break-word;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .prompt-box .comment { color: #888; }
+  .prompt-box .highlight { color: #FFE8A0; font-weight: 700; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #CCC;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.22); }
+  .copy-btn.copied { color: #7CDB8B; border-color: #7CDB8B; }
+
+  /* ── RESULT / CONTEXT BOXES ── */
+  .result-box {
+    background: var(--green-bg);
+    border: 1.5px solid var(--green-border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    font-size: clamp(13px, 1.3vw, 15px);
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .result-box .result-title {
+    font-weight: 800;
+    color: var(--green);
+    margin-bottom: 8px;
+    font-size: clamp(13px, 1.3vw, 15px);
+  }
+  .result-box ul { list-style: disc; padding-left: 18px; }
+  .result-box ul li { margin-bottom: 4px; }
+  .result-box strong { color: var(--text); }
+
+  .context-note {
+    background: var(--pastel-bg);
+    border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    font-size: clamp(13px, 1.35vw, 15px);
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+
+  /* ── KBD KEY ── */
+  .kbd {
+    display: inline-block;
+    background: #F2F2F0;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+    color: var(--text-2);
+    font-family: monospace;
+  }
+</style>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- SLIDE DECK -->
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════
+       SLIDE 1 — TITLE
+  ══════════════════════════════════════ -->
+  <div class="slide slide-title-hero active" id="s1">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">1 / 17</span>
+    </div>
+    <div class="slide-body">
+      <div class="hero-accent"></div>
+      <p class="eyebrow">대웅 AX TF · 임원 AI 교육</p>
+      <h1 class="slide-title">Claude로 만드는<br><span>나만의 AI 에이전트</span></h1>
+      <p class="slide-subtitle">VSCode + Claude Code 실습 교육</p>
+      <!-- 추가할 내용이 있으면 여기에 작성하세요 -->
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 2 — 오늘의 흐름
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">2 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">오늘의 일정</p>
+      <h2 class="slide-title">2시간 안에 이 모든 것을</h2>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left">00:00</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag gray">준비</span>
+            <strong>환경 설치</strong>
+            <span>VSCode + Claude Code 설치 및 계정 연결</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">00:30</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 1</span>
+            <strong>바이브코딩 — 말로 만드는 웹사이트</strong>
+            <span>코드 한 줄 없이 자연어로 웹페이지 제작</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">00:45</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 2</span>
+            <strong>사장단 회의 준비 에이전트 구축</strong>
+            <span><span class="cmd">/보고서요약</span> — 파일 자동 읽기 · 요약 저장</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">01:10</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 3</span>
+            <strong>경영 의사결정 지원 에이전트 구축</strong>
+            <span><span class="cmd">/의사결정분석</span> — 파일 자동 읽기 · 분석 저장</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">01:35</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag gray">마무리</span>
+            <strong>정리 & Q&A</strong>
+            <span>오늘 만든 에이전트 활용법 복습</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 3 — 에이전트란?
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s3">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">3 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">핵심 개념</p>
+      <h2 class="slide-title">에이전트 = <span>캐릭터</span></h2>
+      <p class="slide-subtitle">프롬프트를 매번 다시 쓰는 게 아닙니다.<br>역할을 <strong>한 번</strong> 정의해두면, 이름만 불러서 일을 시킵니다.</p>
+      <div class="compare">
+        <div class="compare-box before">
+          <div class="compare-label">기존 방식</div>
+          <ul class="compare-list">
+            <li>새 대화 시작</li>
+            <li>역할 설명 다시 입력</li>
+            <li>프롬프트 붙여넣기</li>
+            <li>결과 확인 → 끝</li>
+          </ul>
+        </div>
+        <div class="compare-arrow">→</div>
+        <div class="compare-box after">
+          <div class="compare-label">에이전트 방식</div>
+          <ul class="compare-list">
+            <li>캐릭터 파일 한 번 정의</li>
+            <li>파일을 폴더에 넣기</li>
+            <li><span class="cmd">/보고서요약</span> 입력</li>
+            <li>결과 파일이 자동 저장 — 오늘도, 내일도</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 4 — 실습 파일 다운로드
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">4 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 준비</p>
+      <h2 class="slide-title">실습 파일 <span>다운로드</span></h2>
+      <p class="slide-subtitle" style="margin-bottom:24px;">아래 파일을 받아서 VSCode 작업 폴더에 넣어두세요. 실습 때 에이전트가 자동으로 읽습니다.</p>
+
+      <div class="cards col2" style="gap:20px; margin-top:0;">
+        <!-- 파일 1 -->
+        <div class="card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:32px;">📄</span>
+            <div>
+              <div class="card-label">실습 2 · 회의 준비 에이전트용</div>
+              <div class="card-title" style="font-family:monospace; font-size:clamp(14px,1.5vw,17px);">1분기실적보고서.txt</div>
+            </div>
+          </div>
+          <div class="card-desc">대웅제약 2026년 1분기 경영실적 보고서 샘플. 에이전트가 읽고 회의 준비 자료를 자동 생성합니다.</div>
+          <a id="dl-file1" href="1분기실적보고서.txt" download="1분기실적보고서.txt"
+             style="display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(13px,1.3vw,15px); padding:10px 20px; border-radius:8px; text-decoration:none; width:fit-content; margin-top:auto;">
+            ⬇ 다운로드
+          </a>
+        </div>
+
+        <!-- 파일 2 -->
+        <div class="card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:32px;">📄</span>
+            <div>
+              <div class="card-label">실습 3 · 의사결정 에이전트용</div>
+              <div class="card-title" style="font-family:monospace; font-size:clamp(14px,1.5vw,17px);">의사결정안건.txt</div>
+            </div>
+          </div>
+          <div class="card-desc">AI 자동화 솔루션 A사 vs B사 도입 검토 안건. 에이전트가 읽고 선택지 분석 + 악마의 변호인 보고서를 생성합니다.</div>
+          <a id="dl-file2" href="의사결정안건.txt" download="의사결정안건.txt"
+             style="display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(13px,1.3vw,15px); padding:10px 20px; border-radius:8px; text-decoration:none; width:fit-content; margin-top:auto;">
+            ⬇ 다운로드
+          </a>
+        </div>
+      </div>
+
+      <!-- 강사 전용 파일 교체 패널 -->
+      <div id="admin-panel" style="display:none; margin-top:20px; border:1.5px dashed var(--pastel-border); border-radius:10px; padding:16px 20px; background:var(--pastel-bg);">
+        <p style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--brand); margin-bottom:12px;">🔧 강사 전용 — 파일 링크 교체 (Ctrl+Shift+A)</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="font-size:12px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">파일 1 URL (실적보고서)</label>
+            <input id="url-file1" type="text" placeholder="https://drive.google.com/... 또는 파일명"
+              style="width:100%; padding:8px 10px; border:1.5px solid var(--pastel-border); border-radius:6px; font-size:12px; outline:none;"
+              oninput="updateDownloadLink(1, this.value)">
+          </div>
+          <div>
+            <label style="font-size:12px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">파일 2 URL (의사결정안건)</label>
+            <input id="url-file2" type="text" placeholder="https://drive.google.com/... 또는 파일명"
+              style="width:100%; padding:8px 10px; border:1.5px solid var(--pastel-border); border-radius:6px; font-size:12px; outline:none;"
+              oninput="updateDownloadLink(2, this.value)">
+          </div>
+        </div>
+        <p style="font-size:11px; color:var(--text-3); margin-top:8px;">Google Drive: 공유 → "링크 복사" → 여기 붙여넣기. 또는 같은 폴더에 파일을 넣고 파일명만 입력.</p>
+      </div>
+
+      <div class="hbox" style="margin-top:16px; padding:12px 20px;">
+        <p>다운로드 후 → <strong>VSCode에서 새 폴더 열기</strong> (예: <span style="font-family:monospace; background:#F2F2F0; padding:1px 6px; border-radius:3px;">my-agents</span>) → 그 폴더 안에 파일 이동</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 5 — 환경: VSCode 설치
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s4">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">5 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">Step 1 · 환경 준비</p>
+      <h2 class="slide-title">VSCode 설치하기</h2>
+      <p class="slide-subtitle" style="margin-bottom:16px;">VSCode는 오늘 <strong>Claude와 대화하는 공간</strong>으로 사용합니다. Node.js 설치는 필요 없습니다.</p>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab-btn active" onclick="switchOS('win', this)" role="tab">🪟 Windows</button>
+        <button class="os-tab-btn" onclick="switchOS('mac', this)" role="tab">🍎 Mac</button>
+      </div>
+      <div id="os-win" class="os-content active">
+        <div class="step-list" style="margin-top:0;">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span>브라우저에서 <strong>code.visualstudio.com</strong> 입력 → Enter</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>다운로드 버튼 클릭</strong><span>파란색 "Download for Windows" 버튼 클릭</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>설치 파일 실행</strong><span>다운로드된 .exe 파일 더블클릭 → 설치 완료</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>VSCode 실행 확인</strong><span>시작 메뉴에서 "Visual Studio Code" 클릭</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="os-mac" class="os-content">
+        <div class="step-list" style="margin-top:0;">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span>Safari/Chrome에서 <strong>code.visualstudio.com</strong> 입력</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>"Mac" 다운로드</strong><span>"Download for Mac" 버튼 클릭</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>압축 해제 후 이동</strong><span>다운로드된 .zip 해제 → Visual Studio Code.app을 응용 프로그램 폴더로 이동</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>Launchpad에서 실행</strong><span>Launchpad → Visual Studio Code 클릭</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 5 — 환경: VSCode 익히기
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">6 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">Step 2 · 환경 준비</p>
+      <h2 class="slide-title">VSCode 기본 화면</h2>
+      <p class="slide-subtitle" style="margin-bottom:20px;">오늘 쓸 부분은 딱 하나. 왼쪽 사이드바의 <strong style="color:var(--brand)">Claude 아이콘</strong>만 기억하면 됩니다.</p>
+      <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:32px; align-items:center;">
+        <!-- ★ 스크린샷 교체: 같은 폴더에 screenshot-s5.png 로 저장 후 아래 img 태그 사용 -->
+        <!-- <img src="screenshot-s5.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);"> -->
+        <div style="border:2px dashed var(--pastel-border); border-radius:12px; background:var(--pastel-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:240px; gap:10px; color:var(--text-3);">
+          <span style="font-size:36px;">📷</span>
+          <span style="font-weight:700; font-size:15px; color:var(--text-2);">VSCode 전체 화면 캡쳐</span>
+          <span style="font-size:12px; font-family:monospace; background:#EEE; padding:3px 10px; border-radius:4px; color:var(--text-3);">screenshot-s5.png</span>
+          <span style="font-size:11px; color:var(--text-3);">같은 폴더에 저장 후 위 주석 교체</span>
+        </div>
+        <div class="step-list" style="margin-top:0;">
+          <div class="step-item">
+            <div class="step-num">A</div>
+            <div class="step-text"><strong>사이드바 (왼쪽)</strong><span>Claude, 파일탐색기 등 아이콘. 오늘은 Claude 아이콘만 사용합니다.</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">B</div>
+            <div class="step-text"><strong>편집창 (중앙)</strong><span>Claude가 파일을 만들거나 코드를 생성하면 여기 나타납니다.</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">C</div>
+            <div class="step-text"><strong>터미널 (아래)</strong><span>Claude가 명령을 실행할 때 사용. 직접 건드릴 필요 없습니다.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 6 — 환경: Claude Code 연결
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">7 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">Step 3 · 환경 준비</p>
+      <h2 class="slide-title">Claude Code 확장 연결</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:center; margin-top:8px;">
+        <div>
+          <p style="font-size:clamp(14px,1.5vw,17px); color:var(--text-2); margin-bottom:14px;">VSCode에 Claude를 연결합니다. <strong>딱 한 번만</strong> 하면 됩니다.</p>
+          <div class="step-list" style="margin-top:0; gap:10px;">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Extensions 패널 열기</strong><span>Win: <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span> / Mac: <span class="kbd">⌘</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span></span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Claude Code 검색 → 설치</strong><span>"Claude Code" 검색 → 발행자 <strong>Anthropic</strong> 선택 → Install</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>로그인</strong><span>Claude 아이콘 → <strong>"Sign in with Claude.ai"</strong> → 브라우저 로그인</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>첫 대화 테스트</strong><span>채팅창에 <strong>"안녕하세요"</strong> → Claude 답하면 완료!</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- ★ 스크린샷 교체: 같은 폴더에 screenshot-s6.png 로 저장 후 아래 img 태그 사용 -->
+        <!-- <img src="screenshot-s6.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);"> -->
+        <div style="border:2px dashed var(--pastel-border); border-radius:12px; background:var(--pastel-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:260px; gap:10px;">
+          <span style="font-size:36px;">📷</span>
+          <span style="font-weight:700; font-size:15px; color:var(--text-2);">Claude Code 설치 화면 캡쳐</span>
+          <span style="font-size:12px; font-family:monospace; background:#EEE; padding:3px 10px; border-radius:4px; color:var(--text-3);">screenshot-s6.png</span>
+          <span style="font-size:11px; color:var(--text-3);">같은 폴더에 저장 후 위 주석 교체</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 7 — 실습 1: 바이브코딩 소개
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s7">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">8 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 1 · 바이브코딩 · ★☆☆</p>
+      <h2 class="slide-title">말로 만드는 <span>웹사이트</span></h2>
+      <p class="slide-subtitle">코드 한 줄 없이 자연어만으로 웹페이지를 만들고 실시간 수정합니다.<br>AI에게 말로 지시하는 감각을 익히는 것이 목표입니다.</p>
+      <div class="cards col3 mt24">
+        <div class="card">
+          <span class="card-icon">💬</span>
+          <div class="card-label">지시</div>
+          <div class="card-title">원하는 것을 말로 설명</div>
+          <div class="card-desc">"오렌지 컬러, 카드형 레이아웃으로 팀 소개 페이지 만들어줘"</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">⚡</span>
+          <div class="card-label">생성</div>
+          <div class="card-title">Claude가 즉시 제작</div>
+          <div class="card-desc">HTML 파일 자동 생성 → 브라우저 미리보기 버튼 클릭</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔁</span>
+          <div class="card-label">수정</div>
+          <div class="card-title">말로 계속 다듬기</div>
+          <div class="card-desc">"배경 그라디언트 넣어줘" → 즉시 반영</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 8 — 실습 1: 바이브코딩 프롬프트
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s8">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">9 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 1 · 바이브코딩 · 프롬프트</p>
+      <h2 class="slide-title" style="font-size:clamp(24px,3vw,38px);">Claude 채팅창에 붙여넣기</h2>
+      <div class="prompt-label">📋 프롬프트 1 — 기본 웹사이트 생성</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p1a"><span class="comment"># 웹사이트 만들기 요청</span>
+
+저는 대웅제약 AX팀에서 일하고 있습니다.
+우리 팀을 소개하는 <span class="highlight">웹페이지 하나</span>를 만들어주세요.
+
+조건:
+- 제목: "대웅제약 AX팀 — AI로 일하는 방식을 바꿉니다"
+- 색상: 주황색(#F18A00) 포인트, 흰 배경
+- 내용: 팀 소개, 주요 업무 3가지, 연락처 섹션
+- 깔끔하고 전문적인 디자인
+- HTML 파일 하나로 완성해주세요</pre>
+        <button class="copy-btn" onclick="copyPrompt('p1a', this)">복사</button>
+      </div>
+      <div class="prompt-label">📋 프롬프트 2 — 내용 수정 (원하는 대로 바꿔보세요)</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p1b"><span class="comment"># 수정 요청 — 원하는 부분을 자연스럽게 말하면 됩니다</span>
+
+좋아요! 몇 가지 바꿔주세요:
+- 팀 소개 문구를 좀 더 <span class="highlight">임팩트 있게</span> 수정해주세요
+- 하단에 대웅제약 로고 이미지 자리를 만들어주세요
+- 배경에 은은한 <span class="highlight">그라디언트</span> 효과를 넣어주세요
+- 전체적으로 더 현대적인 느낌으로 개선해주세요</pre>
+        <button class="copy-btn" onclick="copyPrompt('p1b', this)">복사</button>
+      </div>
+      <div class="result-box">
+        <div class="result-title">✅ 결과 확인 방법</div>
+        <ul>
+          <li>Claude가 HTML 코드 생성 → 코드 위 <strong>"Open in Browser"</strong> 버튼 클릭</li>
+          <li>마음에 들 때까지 말로 수정 요청 가능. 코드는 볼 필요 없습니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 9 — 커맨드 파일 구조
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s9">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">10 / 17</span>
+    </div>
+    <div class="slide-body" style="flex-direction:row; gap:60px; align-items:center;">
+      <div style="flex:1;">
+        <p class="eyebrow">에이전트 구조</p>
+        <h2 class="slide-title">커맨드 파일 =<br><span>캐릭터 카드</span></h2>
+        <p class="slide-subtitle" style="margin-bottom:20px;">파일 안에 역할·성격·출력 형식을 정의합니다.<br>정의가 끝나면 슬래시(/) 하나로 호출합니다.</p>
+        <ul class="output-list">
+          <li><span class="oi">📄</span><div>파일을 한 번 만들면 <strong>영구적으로 재사용</strong></div></li>
+          <li><span class="oi">✏️</span><div>마음에 안 들면 파일만 수정하면 됨</div></li>
+          <li><span class="oi">➕</span><div>에이전트는 원하는 만큼 계속 추가 가능</div></li>
+        </ul>
+      </div>
+      <div style="flex:1;">
+        <div class="file-tree">
+          <span class="ft-folder">📁 my-agents/</span><br>
+          &nbsp;&nbsp;<span class="ft-folder">📁 .claude/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-folder">📁 commands/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 보고서요약.md</span>
+          &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/보고서요약</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 의사결정분석.md</span>
+          &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/의사결정분석</span>
+        </div>
+        <div class="hbox" style="margin-top:16px; background:var(--green-bg); border-left-color:var(--green);">
+          <p style="color:var(--green); font-weight:700; font-size:clamp(13px,1.4vw,16px);">
+            VSCode에서 채팅창에 <strong>/</strong> 만 입력하면<br>
+            내가 만든 에이전트 목록이 바로 뜹니다
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 10 — 실습 2: /보고서요약 소개
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s10">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">11 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 2 · 에이전트 구축 · ★★☆</p>
+      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/보고서요약</span> 에이전트</h2>
+      <p class="slide-subtitle" style="margin-bottom:20px;"><strong>파일을 폴더에 넣기만 하면</strong> 에이전트가 스스로 읽고, 분석하고, 결과 파일까지 저장합니다.</p>
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; align-items:center; gap:0; margin-top:8px;">
+        <div class="card" style="text-align:center;">
+          <span style="font-size:28px;">📄</span>
+          <div class="card-title" style="margin-top:8px;">1분기실적보고서.txt</div>
+          <div class="card-desc">폴더에 파일 저장</div>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center; background:var(--green-bg); border-color:var(--green-border);">
+          <span style="font-size:28px;">🤖</span>
+          <div class="card-title" style="margin-top:8px; color:var(--green);">/보고서요약</div>
+          <div class="card-desc">파일 자동 읽기 · 분석</div>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center;">
+          <span style="font-size:28px;">📝</span>
+          <div class="card-title" style="margin-top:8px;">회의준비_요약.md</div>
+          <div class="card-desc">결과 파일 자동 저장</div>
+        </div>
+      </div>
+      <div class="hbox" style="margin-top:16px;">
+        <p>내가 하는 일: <strong>파일 넣기</strong> + <strong>/보고서요약</strong> 입력 &nbsp;→&nbsp; 나머지는 에이전트가 알아서 합니다</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 11 — /보고서요약 커맨드 파일 생성
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s11">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">12 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 2 · /보고서요약 · ① 에이전트 생성</p>
+      <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
+      <div class="context-note">이 프롬프트를 Claude에게 주면, 파일을 읽고 결과를 저장하는 <strong>자율 실행 에이전트</strong>가 만들어집니다.</div>
+      <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p2a"><span class="comment"># 에이전트 생성 요청 — 파일 자동 읽기 + 결과 저장형</span>
+
+.claude/commands/ 폴더 안에 <span class="highlight">보고서요약.md</span> 파일을 만들어줘.
+
+이 파일은 내가 /보고서요약 커맨드로 부를 에이전트야.
+이 에이전트의 역할: <span class="highlight">사장단 회의 준비 전문가</span>
+
+호출되면 반드시 이 순서대로 실행해:
+1. 현재 폴더에서 <span class="highlight">.txt 파일을 찾아서 내용을 읽어</span>
+2. 아래 형식으로 분석해:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 핵심 요약 — 3줄
+❓ 사장이 반드시 물어봐야 할 질문 5가지
+⚠️ 리스크 및 우려사항
+💡 추가 확인이 필요한 사항
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. 분석 결과를 <span class="highlight">'회의준비_요약.md'</span> 파일로 저장해</pre>
+        <button class="copy-btn" onclick="copyPrompt('p2a', this)">복사</button>
+      </div>
+      <div class="result-box">
+        <div class="result-title">⚙️ 파일이 만들어지면</div>
+        <ul>
+          <li>탐색기에 <strong>.claude/commands/보고서요약.md</strong> 파일 생성 확인</li>
+          <li>이제 다음 슬라이드에서 <strong>/보고서요약</strong> 한 줄만 입력하면 됩니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 12 — /보고서요약 호출 테스트
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s12">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">13 / 17</span>
+    </div>
+    <div class="slide-body" style="align-items:center; text-align:center;">
+      <p class="eyebrow">실습 2 · /보고서요약 · ② 실행</p>
+      <h2 class="slide-title">이게 전부입니다</h2>
+      <p class="slide-subtitle" style="margin-bottom:32px;">Claude 채팅창에 아래 한 줄만 입력하세요.</p>
+      <div class="prompt-wrap" style="max-width:400px; margin:0 auto;">
+        <pre class="prompt-box" id="p2b" style="font-size:clamp(20px,2.5vw,32px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/보고서요약</pre>
+        <button class="copy-btn" onclick="copyPrompt('p2b', this)">복사</button>
+      </div>
+      <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
+        <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
+        <ul>
+          <li>폴더의 <strong>1분기실적보고서.txt</strong> 파일을 찾아 읽기</li>
+          <li>핵심 요약 · 질문 · 리스크 분석</li>
+          <li><strong>회의준비_요약.md</strong> 파일로 저장 — 왼쪽 탐색기에서 확인</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 13 — 실습 3: /의사결정분석 소개
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s13">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">14 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 3 · 에이전트 구축 · ★★☆</p>
+      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/의사결정분석</span> 에이전트</h2>
+      <p class="slide-subtitle" style="margin-bottom:20px;"><strong>의사결정안건.txt</strong>를 넣으면 선택지 분석 + 악마의 변호인 + 실행계획이 담긴 <strong>의사결정_분석.md</strong>가 자동 생성됩니다.</p>
+      <div class="cards col3 mt16">
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <div class="card-title">선택지 분석</div>
+          <div class="card-desc">각 대안의 장단점 · 판단 기준 · 권고안</div>
+        </div>
+        <div class="card" style="background:var(--pastel-bg); border-color:var(--brand);">
+          <span class="card-icon">😈</span>
+          <div class="card-title" style="color:var(--brand);">악마의 변호인</div>
+          <div class="card-desc">권고안의 가장 큰 약점 3가지를 <strong>자동으로</strong> 함께 제공</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">📋</span>
+          <div class="card-title">실행 계획</div>
+          <div class="card-desc">결정 후 첫 3가지 액션까지 제시</div>
+        </div>
+      </div>
+      <div class="hbox mt16">
+        <p>내가 하는 일: <strong>파일 넣기</strong> + <strong>/의사결정분석</strong> 입력 → 나머지는 에이전트가 알아서</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 14 — /의사결정분석 커맨드 파일 생성
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s14">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">15 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 3 · /의사결정분석 · ① 에이전트 생성</p>
+      <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
+      <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p3a"><span class="comment"># 에이전트 생성 요청 — 파일 자동 읽기 + 결과 저장형</span>
+
+.claude/commands/ 폴더 안에 <span class="highlight">의사결정분석.md</span> 파일을 만들어줘.
+
+이 파일은 내가 /의사결정분석 커맨드로 부를 에이전트야.
+이 에이전트의 역할: <span class="highlight">전략적 의사결정 파트너 (글로벌 컨설팅 파트너급)</span>
+
+호출되면 반드시 이 순서대로 실행해:
+1. 현재 폴더에서 <span class="highlight">.txt 파일을 찾아서 내용을 읽어</span>
+2. 아래 형식으로 분석해:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 상황 정의 — 핵심 이슈 한 문장
+📊 선택지 분석 — 각 대안의 장단점
+⚖️ 판단 기준 — 핵심 고려 요소
+🎯 권고안 — 최선의 선택과 이유
+📋 실행 계획 — 첫 3가지 액션
+😈 악마의 변호인 — 권고안의 가장 큰 약점 3가지
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. 분석 결과를 <span class="highlight">'의사결정_분석.md'</span> 파일로 저장해
+4. 마지막에 "이 결정에서 추가로 고려할 점이 있나요?" 라고 물어봐</pre>
+        <button class="copy-btn" onclick="copyPrompt('p3a', this)">복사</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 15 — /의사결정분석 호출 테스트
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s15">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">16 / 17</span>
+    </div>
+    <div class="slide-body" style="align-items:center; text-align:center;">
+      <p class="eyebrow">실습 3 · /의사결정분석 · ② 실행</p>
+      <h2 class="slide-title">이게 전부입니다</h2>
+      <p class="slide-subtitle" style="margin-bottom:32px;">Claude 채팅창에 아래 한 줄만 입력하세요.</p>
+      <div class="prompt-wrap" style="max-width:480px; margin:0 auto;">
+        <pre class="prompt-box" id="p3b" style="font-size:clamp(18px,2.3vw,28px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/의사결정분석</pre>
+        <button class="copy-btn" onclick="copyPrompt('p3b', this)">복사</button>
+      </div>
+      <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
+        <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
+        <ul>
+          <li>폴더의 <strong>의사결정안건.txt</strong> 파일을 찾아 읽기</li>
+          <li>선택지 분석 · 권고안 · 악마의 변호인 생성</li>
+          <li><strong>의사결정_분석.md</strong> 파일로 저장 — 왼쪽 탐색기에서 확인</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 16 — 오늘의 결과물
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s16">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">17 / 17</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">마무리</p>
+      <h2 class="slide-title">오늘 손에 남는 것</h2>
+      <div class="cards col2 mt16">
+        <div class="card" style="background:var(--white);">
+          <div class="card-label">취득 에이전트 2종</div>
+          <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/보고서요약</span>
+            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/의사결정분석</span>
+          </div>
+          <div class="card-desc" style="margin-top:16px; line-height:1.8;">
+            .txt 파일 자동 읽기 → 분석 → .md 저장<br>
+            이름만 불러도 알아서 파일 찾고 결과 저장
+          </div>
+        </div>
+        <div class="card" style="background:var(--white);">
+          <div class="card-label">내일부터 쓰는 법</div>
+          <div class="step-list" style="margin-top:12px; gap:10px;">
+            <div class="step-item">
+              <div class="step-num" style="width:26px;height:26px;font-size:12px;">1</div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">VSCode 열기</strong></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num" style="width:26px;height:26px;font-size:12px;">2</div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">my-agents 폴더 열기</strong></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num" style="width:26px;height:26px;font-size:12px;">3</div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">채팅창에 / 입력 → 에이전트 선택 → 실행</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hbox mt16" style="background:var(--white);">
+        <p>에이전트는 <strong>계속 추가할 수 있습니다.</strong> 오늘 배운 방식으로 원하는 역할의 캐릭터를 직접 만들어보세요.</p>
+      </div>
+      <!-- 추가할 내용이 있으면 여기에 작성하세요 -->
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAVIGATION -->
+<nav class="nav-bar">
+  <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="btn-next" onclick="go(1)">→</button>
+</nav>
+
+<div class="key-hint">
+  <span class="key">←</span><span class="key">→</span> 이동 &nbsp;·&nbsp; <span class="key">F</span> 전체화면
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let cur = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur].classList.remove('prev'), 400);
+    cur = n;
+    slides[cur].classList.add('active');
+    updateUI();
+  }
+
+  function go(dir) { goTo(cur + dir); }
+
+  function updateUI() {
+    document.getElementById('btn-prev').disabled = cur === 0;
+    document.getElementById('btn-next').disabled = cur === total - 1;
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    const pct = total <= 1 ? 100 : (cur / (total - 1)) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  { e.preventDefault(); go(-1); }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    if ((e.key === 'A' || e.key === 'a') && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      const panel = document.getElementById('admin-panel');
+      if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+  });
+
+  function updateDownloadLink(num, url) {
+    const el = document.getElementById('dl-file' + num);
+    if (!el) return;
+    if (url && url.trim()) {
+      el.href = url.trim();
+      el.removeAttribute('download');
+    } else {
+      const defaults = { 1: '1분기실적보고서.txt', 2: '의사결정안건.txt' };
+      el.href = defaults[num];
+      el.setAttribute('download', defaults[num]);
+    }
+  }
+
+  updateUI();
+
+  function switchOS(os, btn) {
+    const parent = btn.closest('.slide-body');
+    parent.querySelectorAll('.os-content').forEach(el => el.classList.remove('active'));
+    parent.querySelectorAll('.os-tab-btn').forEach(el => el.classList.remove('active'));
+    parent.querySelector('#os-' + os).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function copyPrompt(id, btn) {
+    const el = document.getElementById(id);
+    const text = el.innerText || el.textContent;
+    navigator.clipboard.writeText(text.trim()).then(() => {
+      btn.textContent = '✓ 복사됨';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text.trim();
+      ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = '✓ 복사됨';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
