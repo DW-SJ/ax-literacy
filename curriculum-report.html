@@ -29,6 +29,7 @@
     padding: 48px 40px;
     max-width: 980px;
     margin: 0 auto;
+    zoom: 0.867;
   }
 
   /* ── HEADER ── */
@@ -256,6 +257,50 @@
     vertical-align: middle;
   }
 
+  /* Command tag */
+  .cmd-tag {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1A6B3C;
+    background: #E8F5EE;
+    border: 1.5px solid #A8D9BC;
+    padding: 2px 9px;
+    border-radius: 5px;
+    letter-spacing: 0.03em;
+  }
+
+  /* Output artifact box */
+  .artifact-box {
+    margin-top: 12px;
+    background: #F7FBF9;
+    border: 1.5px solid #A8D9BC;
+    border-radius: 8px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .artifact-box .artifact-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .artifact-box .artifact-text {
+    font-size: 12px;
+    color: #1A6B3C;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .artifact-box .artifact-path {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    font-weight: 400;
+    display: block;
+    margin-top: 2px;
+  }
+
   /* ── FOOTER ── */
   .doc-footer {
     margin-top: 32px;
@@ -282,7 +327,7 @@
   <div>
     <p class="doc-eyebrow">대웅제약 AX팀 · Enabling Part</p>
     <h1 class="doc-title">임원 AI 교육 커리큘럼</h1>
-    <p class="doc-subtitle">C-Level 대상 생성형 AI 실무 활용 교육 모듈 구성안</p>
+    <p class="doc-subtitle">Claude Code + VSCode로 나만의 AI 에이전트 구축 — 실습 커리큘럼</p>
   </div>
   <div class="doc-header-right">
     <svg class="doc-logo" width="160" height="28" viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -311,9 +356,11 @@
 <!-- SUMMARY CHIPS -->
 <div class="summary-row">
   <div class="sum-chip"><span class="label">대상</span> C-Level 임원</div>
-  <div class="sum-chip"><span class="label">총 모듈</span> 5개 모듈</div>
-  <div class="sum-chip"><span class="label">형태</span> 강의 + 실습 병행</div>
-  <div class="sum-chip"><span class="label">도구</span> ChatGPT · Claude Code · VSCode</div>
+  <div class="sum-chip"><span class="label">총 세션</span> 7개 세션</div>
+  <div class="sum-chip"><span class="label">총 시간</span> 2시간</div>
+  <div class="sum-chip"><span class="label">형태</span> 실습 중심</div>
+  <div class="sum-chip"><span class="label">도구</span> Claude Code · VSCode</div>
+  <div class="sum-chip"><span class="label">취득물</span> 재사용 커맨드 4종</div>
 </div>
 
 <!-- TABLE -->
@@ -321,145 +368,215 @@
   <table>
     <thead>
       <tr>
-        <th>모듈</th>
+        <th>세션</th>
         <th>교육 내용</th>
       </tr>
     </thead>
     <tbody>
 
-      <!-- MODULE 1 -->
+      <!-- SESSION 1 -->
       <tr>
         <td>
           <div class="module-cell">
             <div class="module-badge">1</div>
             <div>
-              <div class="module-name">생성형 AI 이해와<br>실전 프롬프트<br>엔지니어링 실습</div>
-              <span class="module-time">강의 + 실습</span>
+              <div class="module-name">환경 설치</div>
+              <span class="module-time">00:00 – 00:20</span>
             </div>
           </div>
         </td>
         <td>
+          <p class="content-summary">VSCode와 Claude Code를 설치하고, 오늘 실습에 쓸 에이전트 폴더 구조까지 세팅</p>
           <ul class="content-list">
-            <li>최신 생성형 AI 트렌드 및 C-Level의 AI 혁신</li>
-            <li>ChatGPT 핵심 기능 및 주요 모델 이해, GPT 보안 설정</li>
-            <li>프롬프트 엔지니어링 4가지 핵심 원칙: AI에게 일 시키는 법</li>
-            <li><span class="lab-tag">실습</span> 텍스트·이미지·음성 기반 멀티모달 프롬프트</li>
+            <li>VSCode 설치 — Windows / Mac 각 환경별 설치 방법 안내</li>
+            <li>Claude Code 확장 프로그램 설치 및 Anthropic 계정 연결</li>
+            <li>작업 폴더 생성 및 VSCode에서 열기 (예: <code style="font-size:11px;background:#F2F2F0;padding:1px 5px;border-radius:3px;">my-agents/</code>)</li>
+            <li>커맨드 폴더 생성 — <code style="font-size:11px;background:#F2F2F0;padding:1px 5px;border-radius:3px;">.claude/commands/</code> 폴더를 함께 만들어두기</li>
           </ul>
         </td>
       </tr>
 
-      <!-- MODULE 2 -->
+      <!-- SESSION 2 -->
       <tr>
         <td>
           <div class="module-cell">
             <div class="module-badge">2</div>
             <div>
-              <div class="module-name">C-Level을 위한<br>경영·보고 자동화</div>
-              <span class="module-time">강의 + 실습</span>
+              <div class="module-name">VSCode &amp; Claude Code<br>첫 걸음 +<br>커맨드 개념 이해</div>
+              <span class="module-time">00:20 – 00:30</span>
             </div>
           </div>
         </td>
         <td>
-          <p class="content-summary">AI로 구현하는 조직 커뮤니케이션·보고 자동화 체계 구현</p>
+          <p class="content-summary">Claude Code 기본 사용법을 익히고, 슬래시 커맨드의 개념과 구조를 이해</p>
           <ul class="content-list">
-            <li><span class="lab-tag">실습 1</span> 일상 소통 자동화: 직원·팀장과의 소통 메시지 자동 생성</li>
-            <li><span class="lab-tag">실습 2</span> 경영진 회의록 GPTs 만들기: 요약, 결정사항, 실행계획 자동화</li>
-            <li><span class="lab-tag">실습 3</span> 경영보고서·기획안 초안 자동 생성 GPTs 만들기</li>
+            <li>VSCode 화면 구성 이해 — 탐색기, 편집창, Claude Code 채팅 패널</li>
+            <li>첫 대화 테스트 — 간단한 질문으로 응답 흐름 확인</li>
+            <li>슬래시 커맨드란? — <code style="font-size:11px;background:#F2F2F0;padding:1px 5px;border-radius:3px;">.claude/commands/</code> 폴더 안의 <code style="font-size:11px;background:#F2F2F0;padding:1px 5px;border-radius:3px;">.md</code> 파일이 나만의 명령어가 되는 구조</li>
+            <li>커맨드 파일 작성법 — 프롬프트를 파일로 저장하면 <span class="cmd-tag">/파일명</span> 으로 언제든 재실행</li>
           </ul>
+          <div class="sub-section">
+            <div class="sub-label">핵심 개념</div>
+            <ul class="content-list">
+              <li>오늘 실습 2~5에서 만드는 에이전트는 모두 커맨드 파일로 저장됨</li>
+              <li>교육 후 VSCode를 열고 슬래시(/) 만 치면 내가 만든 에이전트 목록이 뜸</li>
+            </ul>
+          </div>
         </td>
       </tr>
 
-      <!-- MODULE 3 -->
+      <!-- SESSION 3 -->
       <tr>
         <td>
           <div class="module-cell">
             <div class="module-badge">3</div>
             <div>
-              <div class="module-name">C-Level을 위한<br>데이터 인사이트 분석</div>
-              <span class="module-time">강의 + 실습</span>
+              <div class="module-name"><span class="lab-tag">실습 1</span><br>바이브코딩<br>— 말로 만드는 웹사이트</div>
+              <span class="module-time">00:30 – 00:45</span>
+              <span class="diff-tag" style="display:block;margin-top:6px;">★☆☆ 난이도 하</span>
             </div>
           </div>
         </td>
         <td>
-          <p class="content-summary">손익·시장·조직 데이터를 한눈에 읽는 임원의 데이터 분석</p>
+          <p class="content-summary">코드 한 줄 없이 자연어만으로 부서 소개 웹페이지를 만들고 실시간 수정</p>
           <ul class="content-list">
-            <li><span class="lab-tag">실습 1</span> 손익·매출·원가 구조를 AI로 즉시 분석해 '경영 핵심 포인트' 도출</li>
-            <li><span class="lab-tag">실습 2</span> 고객·시장·경쟁사 데이터를 활용한 '전략 Insight 자동 생성'</li>
-            <li><span class="lab-tag">실습 3</span> KPI·조직 생산성 데이터를 통해 '조직 건강도·경영 리스크' 자동 진단</li>
+            <li>바이브코딩 개념 소개 — "말하면 코드가 된다"는 경험 체득</li>
+            <li>지시 예시: <em>"우리 부서 소개 페이지 만들어 줘. 오렌지 컬러, 카드형 레이아웃으로"</em></li>
+            <li>결과 확인 → 수정 요청 반복 — 색상·문구·레이아웃 즉시 반영 체험</li>
+            <li>완성된 HTML 파일 저장 및 브라우저 미리보기</li>
           </ul>
+          <div class="sub-section">
+            <div class="sub-label">핵심 학습 포인트</div>
+            <ul class="content-list">
+              <li>자연어 지시만으로도 실무 산출물이 만들어진다는 자신감 획득</li>
+              <li>수정 → 피드백 → 재수정의 대화형 개발 루프 이해</li>
+            </ul>
+          </div>
         </td>
       </tr>
 
-      <!-- MODULE 4 -->
+      <!-- SESSION 4 -->
       <tr>
         <td>
           <div class="module-cell">
             <div class="module-badge">4</div>
             <div>
-              <div class="module-name">C-Level을 위한<br>신사업 기획</div>
-              <span class="module-time">강의 + 실습</span>
+              <div class="module-name"><span class="lab-tag">실습 2</span><br>사장단 회의<br>준비 에이전트</div>
+              <span class="module-time">00:45 – 01:00</span>
+              <span class="diff-tag" style="display:block;margin-top:6px;">★★☆ 난이도 중</span>
             </div>
           </div>
         </td>
         <td>
-          <p class="content-summary">AI 기반 사업 기회 발굴부터 검증, 실행까지의 전 과정 실습</p>
+          <p class="content-summary">보고서를 붙여넣으면 회의 준비 자료를 즉시 뽑아주는 커맨드 파일 작성</p>
           <ul class="content-list">
-            <li><span class="lab-tag">실습 1</span> 아이디에이션: 신사업 아이디어 도출 및 컨셉 확장</li>
-            <li><span class="lab-tag">실습 2</span> 시장/경쟁리서치: 경쟁사, 투자 흐름 조사</li>
-            <li><span class="lab-tag">실습 3</span> 기획구조설계: 비즈니스모델, 전략 메시지 구성</li>
-            <li><span class="lab-tag">실습 4</span> 발표자료 제작: 제안서·슬라이드 자동생성</li>
+            <li>커맨드 파일 설계 — 역할 지정(경영 회의 준비 전문가), 입력 변수(<code style="font-size:11px;background:#F2F2F0;padding:1px 5px;border-radius:3px;">$ARGUMENTS</code>) 구조 이해</li>
+            <li>출력 항목 정의 — ① 핵심 3줄 요약 ② 예상 질문 5가지 ③ 리스크·취약 포인트</li>
+            <li>Claude Code에게 커맨드 파일 내용을 말로 지시해서 자동 생성</li>
+            <li>실제 보고서로 <span class="cmd-tag">/회의준비</span> 호출 — 결과 확인 및 프롬프트 다듬기</li>
           </ul>
+          <div class="artifact-box">
+            <span class="artifact-icon">📄</span>
+            <div class="artifact-text">
+              완성 산출물: 재사용 커맨드 파일
+              <span class="artifact-path">.claude/commands/회의준비.md  →  /회의준비 [보고서 텍스트]</span>
+            </div>
+          </div>
         </td>
       </tr>
 
-      <!-- MODULE 5 -->
+      <!-- SESSION 5 -->
       <tr>
         <td>
           <div class="module-cell">
             <div class="module-badge">5</div>
             <div>
-              <div class="module-name">Claude를 활용한<br>AI 에이전트 구축</div>
-              <span class="module-time">실습 중심 · 2시간</span>
+              <div class="module-name"><span class="lab-tag">실습 3</span><br>경영 의사결정<br>지원 에이전트</div>
+              <span class="module-time">01:00 – 01:15</span>
+              <span class="diff-tag" style="display:block;margin-top:6px;">★★☆ 난이도 중</span>
             </div>
           </div>
         </td>
         <td>
-          <p class="content-summary">VSCode + Claude Code로 코딩 없이 나만의 AI 에이전트를 직접 구축하는 실습</p>
-
-          <!-- 환경 설치 -->
+          <p class="content-summary">상황을 입력하면 선택지 분석 → 권고안 → 반론(악마의 변호인)까지 자동 제공하는 커맨드 파일 작성</p>
           <ul class="content-list">
-            <li>환경 설치 (00:00–00:20): VSCode 설치 (Windows/Mac), Claude Code 확장 연결 및 계정 로그인</li>
-            <li>VSCode 익히기 (00:20–00:30): 인터페이스 기본 이해, Claude Code 패널 사용법 및 첫 대화 테스트</li>
+            <li>멀티 페르소나 설계 — 권고자(찬성) + 비판자(반론) 두 역할을 하나의 커맨드에 정의</li>
+            <li>출력 항목 정의 — ① 선택지 열거 및 장단점 ② 권고안 + 근거 ③ 악마의 변호인 반론</li>
+            <li>Claude Code에게 커맨드 파일 내용을 말로 지시해서 자동 생성</li>
+            <li>실제 경영 상황으로 <span class="cmd-tag">/의사결정</span> 호출 — 결과 확인 및 기준 가중치 조정</li>
           </ul>
+          <div class="artifact-box">
+            <span class="artifact-icon">📄</span>
+            <div class="artifact-text">
+              완성 산출물: 재사용 커맨드 파일
+              <span class="artifact-path">.claude/commands/의사결정.md  →  /의사결정 [상황 설명]</span>
+            </div>
+          </div>
+        </td>
+      </tr>
 
+      <!-- SESSION 6 -->
+      <tr>
+        <td>
+          <div class="module-cell">
+            <div class="module-badge">6</div>
+            <div>
+              <div class="module-name"><span class="lab-tag">실습 4</span><br>회의록 → 담당자<br>자동 알림 에이전트</div>
+              <span class="module-time">01:15 – 01:38</span>
+              <span class="diff-tag" style="display:block;margin-top:6px;">★★☆ 난이도 중</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <p class="content-summary">회의록을 붙여넣으면 담당자별 할일 목록 + 개인화 이메일 초안을 자동 생성하는 커맨드 파일 작성</p>
+          <ul class="content-list">
+            <li>파싱 로직 설계 — 이름·액션 아이템·기한 추출 + 긴급도(High/Mid/Low) 자동 분류 방식 정의</li>
+            <li>출력 항목 정의 — ① 담당자별 할일 표 ② 개인화 이메일 초안 (담당자별 각 1건)</li>
+            <li>Claude Code에게 커맨드 파일 내용을 말로 지시해서 자동 생성</li>
+            <li>샘플 회의록으로 <span class="cmd-tag">/회의록</span> 호출 — 긴급도 기준 수정 후 재실행 체험</li>
+          </ul>
+          <div class="artifact-box">
+            <span class="artifact-icon">📄</span>
+            <div class="artifact-text">
+              완성 산출물: 재사용 커맨드 파일
+              <span class="artifact-path">.claude/commands/회의록.md  →  /회의록 [회의록 텍스트]</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- SESSION 7 -->
+      <tr>
+        <td>
+          <div class="module-cell">
+            <div class="module-badge">7</div>
+            <div>
+              <div class="module-name"><span class="lab-tag">실습 5</span><br>음성 메모 →<br>AI 오전 브리핑 에이전트</div>
+              <span class="module-time">01:38 – 02:00</span>
+              <span class="diff-tag" style="display:block;margin-top:6px;">★☆☆ 난이도 하</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <p class="content-summary">출근길 음성 메모를 붙여넣으면 하루 브리핑 문서를 자동 생성하는 커맨드 파일 작성</p>
+          <ul class="content-list">
+            <li>출력 항목 정의 — ① 오늘 하루 핵심 브리핑 ② 담당자별 메시지 초안 ③ 오늘의 CEO 명언</li>
+            <li>Claude Code에게 커맨드 파일 내용을 말로 지시해서 자동 생성</li>
+            <li>샘플 음성 메모로 <span class="cmd-tag">/브리핑</span> 호출 — 출력 포맷 취향대로 조정</li>
+          </ul>
+          <div class="artifact-box">
+            <span class="artifact-icon">📄</span>
+            <div class="artifact-text">
+              완성 산출물: 재사용 커맨드 파일
+              <span class="artifact-path">.claude/commands/브리핑.md  →  /브리핑 [음성 메모 텍스트]</span>
+            </div>
+          </div>
           <div class="sub-section">
-            <div class="sub-label">실습 5가지</div>
+            <div class="sub-label">교육 마무리</div>
             <ul class="content-list">
-              <li>
-                <span class="lab-tag">실습 1</span> <strong>바이브코딩 — 말로 만드는 웹사이트</strong> (00:30–00:45)
-                <span class="diff-tag">★☆☆</span><br>
-                코드 작성 없이 자연어로 부서 소개 웹페이지 제작 및 반복 수정 체험
-              </li>
-              <li>
-                <span class="lab-tag">실습 2</span> <strong>사장단 회의 준비 에이전트</strong> (00:45–01:00)
-                <span class="diff-tag">★★☆</span><br>
-                보고서 입력 → 핵심 3줄 요약·질문 5가지·리스크 자동 도출 에이전트 구축
-              </li>
-              <li>
-                <span class="lab-tag">실습 3</span> <strong>경영 의사결정 지원 에이전트</strong> (01:00–01:15)
-                <span class="diff-tag">★★☆</span><br>
-                상황 정의 → 선택지 분석 → 권고안 도출 + 반론(악마의 변호인) 검토 에이전트 구축
-              </li>
-              <li>
-                <span class="lab-tag">실습 4</span> <strong>회의록 → 담당자 자동 알림 에이전트</strong> (01:15–01:38)
-                <span class="diff-tag">★★☆</span><br>
-                회의록 붙여넣기 → 담당자별 할일 추출 + 개인화 이메일 초안 자동 생성 및 긴급도 조정
-              </li>
-              <li>
-                <span class="lab-tag">실습 5</span> <strong>음성 메모 → AI 오전 브리핑 에이전트</strong> (01:38–02:00)
-                <span class="diff-tag">★☆☆</span><br>
-                출근길 음성 메모 → 하루 브리핑 + 담당자 메시지 초안 + <em>오늘의 CEO 명언</em> 자동 생성
-              </li>
+              <li>완성된 커맨드 4종 복습 — <span class="cmd-tag">/회의준비</span> <span class="cmd-tag">/의사결정</span> <span class="cmd-tag">/회의록</span> <span class="cmd-tag">/브리핑</span></li>
+              <li>내일부터 쓰는 법 — VSCode 열기 → 폴더 열기 → / 입력하면 내 에이전트 목록 즉시 호출</li>
+              <li>커맨드 파일 수정법 — 쓰다가 불편한 부분은 .md 파일 직접 편집으로 개선 가능</li>
             </ul>
           </div>
         </td>
