@@ -1,6 +1,5 @@
 <!doctype html>
-<title>Claude Code 임원 AI 교육 | 대웅제약 AX팀</title>
-<meta name="description" content="VSCode와 Claude Code 확장을 활용한 AI 에이전트 구축 2시간 실습 교육 운영 가이드">
+<title>AI 에이전트 구축 교육 | 대웅 AX TF</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -8,7 +7,6 @@
     --white: #FFFFFF;
     --brand: #F18A00;
     --pastel: #FFB766;
-    --pastel-mid: #FFCC90;
     --pastel-light: #FFE8CC;
     --pastel-bg: #FFF5EC;
     --pastel-border: #FFD4A0;
@@ -16,894 +14,977 @@
     --text-2: #555550;
     --text-3: #999994;
     --line: #EDE8E3;
-    --step-done: #E8F5E9;
-    --radius: 10px;
-    --shadow: 0 2px 12px rgba(241,138,0,0.10);
+    --green: #1A6B3C;
+    --green-bg: #E8F5EE;
+    --green-border: #A8D9BC;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { scroll-behavior: smooth; }
-
-  body {
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
     font-family: -apple-system, 'Apple SD Gothic Neo', BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
     background: var(--white);
     color: var(--text);
-    font-size: 24px;
-    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── TOP HEADER ── */
-  .site-header {
-    background: var(--white);
-    border-bottom: 2px solid var(--pastel-light);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 0 24px;
+  /* ── SLIDE CONTAINER ── */
+  .deck {
+    position: fixed;
+    inset: 0;
   }
-  .site-header-inner {
-    max-width: 960px;
-    margin: 0 auto;
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    transform: translateX(60px);
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── SLIDE HEADER (persistent top bar) ── */
+  .slide-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
-    gap: 24px;
-  }
-  .site-header .logo-wrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    padding: 18px 40px;
+    border-bottom: 2px solid var(--pastel-light);
     flex-shrink: 0;
+    background: var(--white);
   }
-  .site-header .logo-wrap svg { height: 22px; width: auto; }
-  .site-header .logo-divider {
-    width: 1px; height: 20px;
-    background: var(--pastel-border);
-  }
-  .site-header .session-label {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--brand);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
-  .header-nav {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .header-nav::-webkit-scrollbar { display: none; }
-  .header-nav a {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--text-2);
-    text-decoration: none;
-    padding: 4px 10px;
-    border-radius: 20px;
-    white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-  }
-  .header-nav a:hover {
-    background: var(--pastel-light);
-    color: var(--brand);
-  }
-
-  /* ── HERO ── */
-  .hero {
-    background: linear-gradient(160deg, var(--white) 0%, var(--pastel-bg) 100%);
-    border-bottom: 1px solid var(--pastel-border);
-    padding: 56px 24px 48px;
-  }
-  .hero-inner {
-    max-width: 960px;
-    margin: 0 auto;
-  }
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 18px;
+  .slide-header img { height: 22px; width: auto; }
+  .slide-num {
+    font-size: 12px;
     font-weight: 700;
+    color: var(--text-3);
     letter-spacing: 0.08em;
-    color: var(--brand);
-    text-transform: uppercase;
-    background: var(--pastel-light);
-    border: 1px solid var(--pastel-border);
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-  }
-  .hero h1 {
-    font-size: clamp(39px, 6vw, 57px);
-    font-weight: 800;
-    line-height: 1.25;
-    text-wrap: balance;
-    color: var(--text);
-    margin-bottom: 14px;
-  }
-  .hero h1 span { color: var(--brand); }
-  .hero p.subtitle {
-    font-size: 26px;
-    color: var(--text-2);
-    max-width: 580px;
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
-  .hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .meta-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-2);
-    background: var(--white);
-    border: 1.5px solid var(--pastel-border);
-    border-radius: 20px;
-    padding: 6px 14px;
-  }
-  .meta-chip .icon { font-size: 23px; }
-
-  /* ── OVERVIEW CARDS ── */
-  .overview {
-    padding: 48px 24px;
-    background: var(--white);
-  }
-  .overview-inner { max-width: 960px; margin: 0 auto; }
-
-  .section-eyebrow {
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--brand);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .section-title {
-    font-size: clamp(30px, 4.5vw, 39px);
-    font-weight: 800;
-    color: var(--text);
-    margin-bottom: 24px;
-    text-wrap: balance;
   }
 
-  .agenda-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-    margin-top: 8px;
-  }
-  .agenda-card {
-    background: var(--pastel-bg);
-    border: 1.5px solid var(--pastel-border);
-    border-radius: var(--radius);
-    padding: 18px 16px;
+  /* ── SLIDE BODY ── */
+  .slide-body {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    justify-content: center;
+    padding: 48px 80px;
+    overflow: hidden;
   }
-  .agenda-card .time {
-    font-size: 17px;
-    font-weight: 700;
+
+  /* ── TYPOGRAPHY ── */
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--brand);
-    letter-spacing: 0.05em;
+    margin-bottom: 16px;
   }
-  .agenda-card .title {
-    font-size: 23px;
+  .slide-title {
+    font-size: clamp(32px, 4.5vw, 56px);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .slide-title span { color: var(--brand); }
+  .slide-subtitle {
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--text-2);
+    line-height: 1.65;
+    max-width: 720px;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards {
+    display: grid;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .cards.col2 { grid-template-columns: 1fr 1fr; }
+  .cards.col3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cards.col4 { grid-template-columns: repeat(4, 1fr); }
+
+  .card {
+    background: var(--pastel-bg);
+    border: 1.5px solid var(--pastel-border);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .card .card-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+  .card .card-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 6px;
+  }
+  .card .card-title {
+    font-size: clamp(15px, 1.6vw, 19px);
     font-weight: 700;
     color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 6px;
   }
-  .agenda-card .desc {
-    font-size: 18px;
+  .card .card-desc {
+    font-size: clamp(13px, 1.3vw, 15px);
     color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .hbox {
+    background: var(--pastel-bg);
+    border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .hbox p {
+    font-size: clamp(14px, 1.5vw, 17px);
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .hbox strong { color: var(--text); }
+
+  /* ── COMPARE (before/after) ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .compare-box {
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .compare-box.before {
+    background: #F5F5F4;
+    border: 1.5px solid #DDD;
+  }
+  .compare-box.after {
+    background: var(--pastel-bg);
+    border: 1.5px solid var(--pastel-border);
+  }
+  .compare-arrow {
+    text-align: center;
+    font-size: 28px;
+    color: var(--brand);
+  }
+  .compare-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .compare-box.before .compare-label { color: var(--text-3); }
+  .compare-box.after  .compare-label { color: var(--brand); }
+  .compare-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .compare-list li {
+    font-size: clamp(13px, 1.4vw, 16px);
+    color: var(--text-2);
+    padding-left: 16px;
+    position: relative;
     line-height: 1.5;
   }
-  .agenda-card .badge {
-    display: inline-block;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: var(--white);
-    border: 1px solid var(--pastel-border);
-    color: var(--brand);
-    width: fit-content;
+  .compare-list li::before {
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: var(--text-3);
   }
+  .compare-box.after .compare-list li { color: var(--text); }
+  .compare-box.after .compare-list li::before { color: var(--brand); content: "✓"; }
 
-  /* ── MAIN CONTENT SECTIONS ── */
-  .content-section {
-    padding: 56px 24px;
-    border-top: 1px solid var(--line);
-  }
-  .content-section.alt-bg {
-    background: var(--pastel-bg);
-  }
-  .content-inner {
-    max-width: 760px;
-    margin: 0 auto;
-  }
-
-  /* ── OS TABS ── */
-  .os-tabs {
+  /* ── TIMELINE ── */
+  .timeline {
     display: flex;
+    flex-direction: column;
     gap: 0;
-    border: 1.5px solid var(--pastel-border);
-    border-radius: 8px;
-    overflow: hidden;
-    width: fit-content;
-    margin-bottom: 28px;
+    margin-top: 16px;
   }
-  .os-tab-btn {
-    font-size: 20px;
-    font-weight: 600;
-    padding: 8px 20px;
-    border: none;
-    background: var(--white);
-    color: var(--text-2);
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+  .tl-item {
     display: flex;
-    align-items: center;
-    gap: 6px;
+    align-items: stretch;
+    gap: 0;
   }
-  .os-tab-btn.active {
-    background: var(--pastel-light);
+  .tl-left {
+    width: 110px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-right: 20px;
+    padding-top: 14px;
+    font-size: 12px;
+    font-weight: 700;
     color: var(--brand);
+    letter-spacing: 0.04em;
   }
-  .os-tab-btn:first-child { border-right: 1.5px solid var(--pastel-border); }
+  .tl-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 24px;
+  }
+  .tl-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--brand);
+    flex-shrink: 0;
+    margin-top: 18px;
+  }
+  .tl-connector {
+    flex: 1;
+    width: 2px;
+    background: var(--pastel-border);
+    margin: 2px 0;
+  }
+  .tl-item:last-child .tl-connector { display: none; }
+  .tl-content {
+    flex: 1;
+    padding: 10px 0 18px 20px;
+  }
+  .tl-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--brand);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .tl-tag.gray {
+    background: #D0CEC9;
+    color: var(--text-2);
+  }
+  .tl-content strong {
+    display: block;
+    font-size: clamp(14px, 1.5vw, 17px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .tl-content span {
+    font-size: clamp(12px, 1.2vw, 14px);
+    color: var(--text-2);
+  }
 
-  .os-content { display: none; }
-  .os-content.active { display: block; }
+  /* ── CODE / COMMAND ── */
+  .cmd {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88em;
+    font-weight: 700;
+    color: var(--green);
+    background: var(--green-bg);
+    border: 1.5px solid var(--green-border);
+    padding: 3px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+  .path {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85em;
+    color: var(--text-2);
+    background: #F2F2F0;
+    border: 1px solid var(--line);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ── FILE TREE ── */
+  .file-tree {
+    background: #1A1A1A;
+    color: #E8E8E6;
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: clamp(13px, 1.4vw, 16px);
+    line-height: 2;
+    margin-top: 20px;
+  }
+  .file-tree .ft-folder { color: #FFB766; }
+  .file-tree .ft-file { color: #A8D9BC; }
+  .file-tree .ft-arrow { color: #888; }
+  .file-tree .ft-cmd { color: #FFE8A0; font-weight: 700; }
+
+  /* ── BIG STAT ── */
+  .big-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .big-num {
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    color: var(--brand);
+    line-height: 1;
+  }
+  .big-unit {
+    font-size: clamp(18px, 2vw, 26px);
+    font-weight: 700;
+    color: var(--text-2);
+  }
 
   /* ── STEP LIST ── */
   .step-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 8px;
+    gap: 14px;
+    margin-top: 16px;
   }
   .step-item {
     display: flex;
-    gap: 16px;
     align-items: flex-start;
+    gap: 16px;
   }
   .step-num {
-    flex-shrink: 0;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--pastel);
-    color: var(--white);
-    font-size: 21px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1px;
-  }
-  .step-body { flex: 1; }
-  .step-body strong {
-    display: block;
-    font-size: 23px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .step-body p, .step-body span {
-    font-size: 21px;
-    color: var(--text-2);
-    line-height: 1.6;
-  }
-  .step-body .tip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 6px;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--brand);
-    background: var(--pastel-light);
-    padding: 3px 10px;
-    border-radius: 6px;
-  }
-
-  .kbd {
-    display: inline-block;
-    font-family: 'SF Mono', 'Consolas', monospace;
-    font-size: 18px;
-    background: var(--white);
-    border: 1.5px solid var(--line);
-    border-bottom-width: 3px;
-    border-radius: 5px;
-    padding: 1px 7px;
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  /* ── INFO BOX ── */
-  .info-box {
-    background: var(--pastel-light);
-    border-left: 4px solid var(--pastel);
-    border-radius: 0 8px 8px 0;
-    padding: 14px 18px;
-    margin: 20px 0;
-    font-size: 21px;
-    color: var(--text-2);
-  }
-  .info-box strong { color: var(--brand); }
-
-  /* ── SCREENSHOT PLACEHOLDER ── */
-  .screen-mock {
-    background: #F2F2F2;
-    border: 1.5px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 16px 0;
-  }
-  .screen-mock .titlebar {
-    background: #E4E4E4;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .screen-mock .dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-  }
-  .screen-mock .dot.r { background: #FF5F57; }
-  .screen-mock .dot.y { background: #FEBC2E; }
-  .screen-mock .dot.g { background: #28C840; }
-  .screen-mock .screen-body {
-    padding: 18px;
-    font-size: 20px;
-    color: var(--text-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 80px;
-    text-align: center;
-  }
-
-  /* ── PRACTICE SECTION ── */
-  .practice-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-  }
-  .practice-num {
-    width: 60px;
-    height: 60px;
+    width: 32px; height: 32px;
     border-radius: 50%;
     background: var(--brand);
     color: var(--white);
-    font-size: 27px;
+    font-size: 14px;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin-top: 2px;
   }
-  .practice-header-text .tag {
-    font-size: 17px;
+  .step-text strong {
+    display: block;
+    font-size: clamp(14px, 1.5vw, 17px);
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--brand);
+    color: var(--text);
     margin-bottom: 2px;
   }
-  .practice-header-text h2 {
-    font-size: clamp(27px, 3.75vw, 33px);
-    font-weight: 800;
-    color: var(--text);
-    text-wrap: balance;
+  .step-text span {
+    font-size: clamp(12px, 1.2vw, 14px);
+    color: var(--text-2);
   }
 
-  .practice-meta {
+  /* ── OUTPUT LIST ── */
+  .output-list {
+    list-style: none;
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-top: 16px;
   }
-  .practice-chip {
-    font-size: 18px;
-    font-weight: 600;
+  .output-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: clamp(14px, 1.5vw, 17px);
     color: var(--text-2);
+    line-height: 1.55;
+  }
+  .output-list li .oi {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── TITLE SLIDE SPECIFIC ── */
+  .slide-title-hero {
+    background: linear-gradient(145deg, var(--white) 0%, var(--pastel-bg) 100%);
+  }
+  .slide-title-hero .slide-body {
+    align-items: flex-start;
+    padding-top: 0;
+    padding-bottom: 0;
+    position: relative;
+  }
+  .hero-accent {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--pastel-light) 0%, transparent 70%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* ── NAVIGATION ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
     background: var(--white);
     border: 1.5px solid var(--pastel-border);
-    border-radius: 20px;
-    padding: 4px 12px;
+    border-radius: 40px;
+    padding: 8px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    z-index: 200;
+  }
+  .nav-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--pastel-bg);
+    color: var(--brand);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .nav-btn:hover { background: var(--pastel-light); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .nav-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .nav-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--pastel-border);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: none;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .nav-dot.active {
+    background: var(--brand);
+    transform: scale(1.3);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--brand);
+    transition: width 0.35s ease;
+    z-index: 300;
+  }
+
+  /* ── SLIDE-SPECIFIC BACKGROUNDS ── */
+  .bg-brand {
+    background: var(--brand);
+  }
+  .bg-brand .slide-title,
+  .bg-brand .eyebrow,
+  .bg-brand .slide-subtitle { color: var(--white); }
+  .bg-brand .eyebrow { color: rgba(255,255,255,0.7); }
+  .bg-brand .slide-header {
+    background: transparent;
+    border-bottom-color: rgba(255,255,255,0.2);
+  }
+  .bg-brand .slide-num { color: rgba(255,255,255,0.5); }
+  .bg-brand .slide-header svg path { fill: var(--white) !important; }
+
+  .bg-alt { background: var(--pastel-bg); }
+
+  /* ── UTILITY ── */
+  .mt8  { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .mt24 { margin-top: 24px; }
+  .mb8  { margin-bottom: 8px; }
+  .text-brand { color: var(--brand); }
+  .text-2 { color: var(--text-2); }
+  .fw700 { font-weight: 700; }
+
+  /* ── KEYBOARD HINT ── */
+  .key-hint {
+    position: fixed;
+    bottom: 28px;
+    right: 36px;
+    font-size: 11px;
+    color: var(--text-3);
     display: flex;
     align-items: center;
     gap: 4px;
   }
-
-  .context-box {
-    background: var(--white);
-    border: 1.5px solid var(--line);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    margin-bottom: 20px;
-    font-size: 21px;
+  .key {
+    display: inline-block;
+    background: #F2F2F0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
     color: var(--text-2);
-    line-height: 1.7;
-  }
-  .context-box .context-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 6px;
   }
 
-  /* ── PROMPT BOX ── */
-  .prompt-label {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--brand);
-    margin-bottom: 8px;
+  /* ── SCROLLABLE SLIDE BODY ── */
+  .scrollable .slide-body {
+    overflow-y: auto;
+    justify-content: flex-start;
+    padding-top: 32px;
+    padding-bottom: 80px;
+  }
+  .scrollable .slide-body::-webkit-scrollbar { width: 4px; }
+  .scrollable .slide-body::-webkit-scrollbar-thumb { background: var(--pastel-border); border-radius: 4px; }
+
+  /* ── OS TABS (Windows / Mac) ── */
+  .os-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    margin-top: 4px;
+  }
+  .os-tab-btn {
     display: flex;
     align-items: center;
     gap: 6px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1.5px solid var(--pastel-border);
+    background: var(--white);
+    font-size: clamp(13px, 1.3vw, 15px);
+    font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .os-tab-btn.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--white);
+  }
+  .os-content { display: none; }
+  .os-content.active { display: block; }
+
+  /* ── PROMPT BOX ── */
+  .prompt-label {
+    font-size: clamp(12px, 1.2vw, 14px);
+    font-weight: 700;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    margin-top: 16px;
   }
   .prompt-wrap {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   }
   .prompt-box {
-    background: #1C1C1E;
-    border-radius: var(--radius);
-    padding: 20px 20px 20px 20px;
-    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
-    font-size: 20px;
+    background: #1A1A1A;
+    color: #E8E8E6;
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: clamp(12px, 1.2vw, 14px);
     line-height: 1.75;
-    color: #F0EDE8;
     white-space: pre-wrap;
     word-break: break-word;
-    padding-right: 70px;
-    border: 1.5px solid #333;
+    width: 100%;
+    overflow-x: auto;
   }
   .prompt-box .comment { color: #888; }
-  .prompt-box .highlight { color: var(--pastel); font-weight: 600; }
+  .prompt-box .highlight { color: #FFE8A0; font-weight: 700; }
   .copy-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--brand);
-    background: var(--pastel-light);
-    border: 1.5px solid var(--pastel-border);
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #CCC;
     border-radius: 6px;
-    padding: 5px 11px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
     transition: background 0.15s;
-    font-family: inherit;
-    letter-spacing: 0.02em;
   }
-  .copy-btn:hover { background: var(--pastel-mid); }
-  .copy-btn.copied { color: #2C8C4A; background: #E8F5E9; border-color: #A5D6B0; }
+  .copy-btn:hover { background: rgba(255,255,255,0.22); }
+  .copy-btn.copied { color: #7CDB8B; border-color: #7CDB8B; }
 
+  /* ── RESULT / CONTEXT BOXES ── */
   .result-box {
-    background: var(--pastel-bg);
-    border: 1.5px solid var(--pastel-border);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    font-size: 21px;
+    background: var(--green-bg);
+    border: 1.5px solid var(--green-border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    font-size: clamp(13px, 1.3vw, 15px);
     color: var(--text-2);
-    line-height: 1.6;
+    line-height: 1.7;
   }
   .result-box .result-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--brand);
+    font-weight: 800;
+    color: var(--green);
     margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    font-size: clamp(13px, 1.3vw, 15px);
   }
-  .result-box ul {
-    padding-left: 18px;
-  }
+  .result-box ul { list-style: disc; padding-left: 18px; }
   .result-box ul li { margin-bottom: 4px; }
+  .result-box strong { color: var(--text); }
 
-  /* ── DIVIDER ── */
-  hr.section-hr {
-    border: none;
-    border-top: 1.5px solid var(--pastel-border);
-    margin: 32px 0;
-  }
-
-  /* ── FOOTER ── */
-  .site-footer {
+  .context-note {
     background: var(--pastel-bg);
-    border-top: 2px solid var(--pastel-border);
-    padding: 40px 24px;
-    text-align: center;
+    border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    font-size: clamp(13px, 1.35vw, 15px);
+    color: var(--text-2);
+    line-height: 1.7;
   }
-  .site-footer svg { height: 30px; width: auto; opacity: 0.7; margin-bottom: 12px; }
-  .site-footer p {
-    font-size: 20px;
-    color: var(--text-3);
-    line-height: 1.6;
-  }
-  .site-footer .footer-heart { color: var(--brand); }
 
-  /* ── UTILITY ── */
-  .highlight-orange { color: var(--brand); font-weight: 700; }
-  .mt-8 { margin-top: 8px; }
-  .mt-16 { margin-top: 16px; }
-  .mt-24 { margin-top: 24px; }
-  .mb-16 { margin-bottom: 16px; }
-
-  @media (max-width: 640px) {
-    .header-nav { display: none; }
-    .agenda-grid { grid-template-columns: 1fr 1fr; }
+  /* ── KBD KEY ── */
+  .kbd {
+    display: inline-block;
+    background: #F2F2F0;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+    color: var(--text-2);
+    font-family: monospace;
   }
 </style>
 
-<!-- STICKY HEADER -->
-<header class="site-header">
-  <div class="site-header-inner">
-    <div class="logo-wrap">
-      <svg viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#lh)">
-          <path d="M3.461 18.2407C3.27175 18.1231 3.13575 18.2181 3.08543 18.2743C3.04167 18.3236 2.97531 18.4674 3.0847 18.6416C3.80412 19.7767 5.01688 23.1215 2.06665 27.9946H6.91588C7.62362 24.7335 7.23821 20.5577 3.461 18.2407Z" fill="#F18A00"/>
-          <path d="M14.0499 19.953C13.7709 19.8917 13.5653 20.1334 13.8001 20.3616C13.8001 20.3616 16.0791 22.3704 15.6255 27.9946H19.83C19.83 27.9946 19.7308 21.2287 14.0499 19.953Z" fill="#F18A00"/>
-          <path d="M25.7228 11.5021C25.7228 11.5021 27.0763 10.7646 26.176 9.4655C26.176 9.4655 26.9647 8.72798 26.2314 7.88311C26.2314 7.88311 26.7379 6.97545 26.0072 6.35476C26.0072 6.35476 27.0409 4.69642 25.8358 4.01549C25.4796 3.81358 25.1368 3.8092 24.8495 3.88296C24.6744 3.92786 24.506 4.00563 24.3517 4.10348C24.0371 4.29882 23.826 4.54928 23.6207 4.85707C23.3775 5.22255 23.0059 5.84944 22.4455 6.91849L20.3116 4.99837C20.1618 4.85671 20.3441 4.60515 20.425 4.47772C20.572 4.255 20.7765 4.09436 21.0026 3.95415C21.2407 3.80519 21.5003 3.69383 21.768 3.61022C21.9641 3.54596 22.4207 3.46381 22.4148 3.1845C22.4115 3.00523 22.2048 2.94316 22.063 2.92381C21.9492 2.90665 21.8303 2.89387 21.7115 2.88876C21.629 2.8862 21.5029 2.90665 21.4475 2.82121C21.4139 2.76973 21.4052 2.69744 21.4161 2.63829C21.4358 2.55541 21.5383 2.52328 21.6101 2.50831C21.6101 2.50831 22.3765 2.32539 22.3357 2.14028C22.3357 2.14028 22.3357 2.02637 21.7738 0.891966C21.7738 0.891966 21.66 0.678011 21.1813 1.08036C21.1022 1.14389 21.0449 1.22385 20.9399 1.24649C20.7065 1.29286 20.5111 1.05371 20.3572 0.911317C20.1596 0.727301 19.9525 0.553143 19.7133 0.424259C19.3873 0.249006 19.0249 0.159919 18.654 0.143489C18.5946 0.139838 18.5319 0.139838 18.4703 0.139838C18.1694 0.143489 17.83 0.191318 17.5481 0.303407C17.4329 0.349776 17.2932 0.352697 17.1908 0.28004C17.0985 0.221622 17.0194 0.138742 16.9202 0.088722C16.7984 0.0299391 16.6686 0 16.5344 0C16.052 0 15.6651 0.387748 15.6651 0.871155C15.6651 0.90365 15.6673 0.935049 15.6713 0.964988C15.6732 0.982879 15.6754 0.997848 15.6772 1.01428C15.698 1.13403 15.7421 1.25051 15.811 1.35091C15.8238 1.37209 15.8394 1.39071 15.8515 1.40933C15.8799 1.44365 15.9109 1.47687 15.9109 1.52324C15.9109 1.56121 15.8981 1.59079 15.8708 1.61708C15.5671 1.92852 14.9596 2.52109 14.397 4.23857C14.397 4.23857 11.7516 2.10194 9.43033 2.92673C9.27572 2.9815 9.12768 3.04795 8.98511 3.12827C8.98511 3.12827 10.1363 3.8092 10.5581 4.49488C10.5891 4.54782 10.5796 4.58652 10.5643 4.61537C10.5494 4.64531 10.5279 4.67671 10.448 4.69168C10.448 4.69168 10.4469 4.68876 10.4458 4.68876L5.61337 5.45257C5.57399 5.46133 5.543 5.45111 5.52987 5.41971C5.51601 5.38977 5.53716 5.35983 5.55065 5.35107L9.7935 1.77334C9.7935 1.77334 9.95868 1.63789 10.0874 1.4327C10.1662 1.32681 10.2139 1.19647 10.2139 1.05481C10.2139 0.733143 9.97399 0.467707 9.66369 0.423894C9.62869 0.417322 9.59368 0.412575 9.55977 0.408924C9.3213 0.37862 9.10617 0.385557 9.10617 0.385557H5.32714C5.32714 0.385557 5.24436 0.387748 5.14992 0.407464V0.408924C5.02741 0.438863 4.93625 0.548762 4.93625 0.680567C4.93625 0.780607 5.00298 0.868234 5.08867 0.947098C5.28083 1.12308 5.44127 1.20341 5.44965 1.48491C5.45549 1.78065 5.29942 2.0585 5.15868 2.3075L3.31437 5.5318C3.28447 5.57707 3.24509 5.67017 3.15539 5.74247C3.0657 5.8133 2.97235 5.82973 2.84181 5.84981C2.1224 5.94875 0.409725 6.18681 0.272623 6.20433C0.0779105 6.22916 0.000244141 6.35439 0.000244141 6.49752C0.000244141 6.61983 0.0779105 6.72352 0.18657 6.76405C0.305805 6.8075 0.403161 6.84547 0.564328 6.90279C0.564328 6.90279 1.01538 8.25443 1.08611 8.44502C1.15685 8.63524 1.4657 9.0982 2.25877 8.83204C2.55631 8.73309 2.976 8.81196 2.976 9.37788V16.8882C2.976 16.9061 2.97891 16.9474 3.00152 16.9831C3.02486 17.0204 3.06825 17.0452 3.11018 17.0525C3.44345 17.1153 4.35321 17.319 5.20863 17.8291C5.24291 17.8463 5.26551 17.8598 5.29724 17.8397C5.32969 17.8211 5.32714 17.7882 5.32714 17.7696V15.6589H9.52003L9.51383 16.7407C9.51383 16.7407 9.51383 17.8138 8.37873 17.8138C8.37873 17.8138 6.01483 17.8123 5.92841 17.8123C5.82413 17.8123 5.74464 17.8857 5.73625 17.9671C5.72276 18.0996 5.80371 18.169 5.93935 18.2501C5.93935 18.2501 10.9042 21.1345 9.60535 27.9942L13.7629 28C13.7629 28 14.0969 23.6643 10.9042 21.1348C10.8068 21.0592 10.7729 20.9979 10.7714 20.9552C10.766 20.8668 10.8615 20.8453 10.9242 20.8318C10.9548 20.8219 10.9855 20.8139 11.0154 20.8077C11.7253 20.6102 14.9982 19.5112 15.0343 15.8593L15.0562 8.97881C15.093 7.60052 15.2396 7.34749 15.5087 7.34749C15.6841 7.34749 15.7917 7.62826 15.9033 8.04084C16.1133 8.83824 16.4232 9.52794 17.0146 10.1154C17.4077 10.5021 17.8001 10.8891 18.1931 11.2757C18.1931 11.2757 20.2934 13.3353 20.4455 13.5029C20.751 13.8406 22.0075 15.8838 18.8243 17.7272C18.6529 17.8276 18.4455 17.8747 18.3561 18.0701C18.2435 18.3118 18.5111 18.5491 18.6555 18.7061C19.0774 19.1632 19.3961 19.6525 19.6899 20.1936C20.5975 21.853 21.8814 25.0499 21.259 27.9942H26.0881C26.0881 27.9942 26.5333 21.2568 20.44 18.9164C20.3503 18.8821 20.2788 18.8087 20.3124 18.7046C20.3499 18.605 20.4549 18.5597 20.5373 18.502C21.0238 18.1712 22.8163 16.7969 22.4743 14.7403C22.4743 14.7403 25.6648 14.8377 25.7228 11.5021ZM9.57436 14.0769H5.34063V12.987H9.57436V14.0769ZM9.57436 11.4053H5.34063V10.3162H9.57436V11.4053ZM12.2734 18.3027L12.2708 18.3012C12.2435 18.3198 12.2121 18.3297 12.1771 18.3297C12.0859 18.3297 12.0115 18.2563 12.0115 18.165C12.0115 18.1621 12.0126 18.1599 12.0126 18.1559L12.0115 18.1537V9.89816C12.0115 8.82692 11.2965 8.73638 10.9607 8.73638H5.15795C4.73388 8.73638 4.53662 8.54652 4.44728 8.37638C4.41957 8.32563 4.39587 8.26575 4.42431 8.18798C4.45421 8.11021 4.5089 8.07954 4.56178 8.06019L10.4699 6.09042C10.5348 6.06815 10.6198 6.04368 10.7109 6.01374C10.7346 6.00863 10.7795 5.98234 10.8323 6.01374C10.8921 6.04806 10.8885 6.07946 10.898 6.11415C10.9508 6.32956 11.0551 6.67606 11.2024 6.94295C11.931 8.26721 13.4052 8.33366 13.4052 8.33366L13.4074 16.2719C13.4074 17.5155 12.689 18.0175 12.2734 18.3027ZM18.4976 0.786814C18.7937 0.786814 19.0387 1.02998 19.0387 1.32864C19.0387 1.63022 18.7937 1.87192 18.4976 1.87192C18.1982 1.87192 17.9514 1.63022 17.9514 1.32864C17.9514 1.02998 18.1982 0.786814 18.4976 0.786814ZM21.9332 12.4496C21.7581 12.2794 17.9452 8.53922 17.8052 8.39536C17.6644 8.25114 16.844 7.34749 17.6644 6.49131C18.2588 5.87208 19.062 6.22113 19.3807 6.51139C19.695 6.80056 23.0548 9.87114 23.0548 9.87114C23.2867 7.89188 24.141 7.42782 24.141 7.42782C24.141 7.42782 24.6245 7.08133 24.9523 7.54392C25.2163 7.91634 24.7959 8.43662 24.7959 8.43662C25.0602 8.50782 25.1167 8.78202 25.077 9.02481C25.0526 9.17232 24.9826 9.30887 24.8794 9.41256C24.8032 9.48668 24.7401 9.51881 24.7401 9.51881C24.8546 9.50895 24.9293 9.56518 24.9727 9.6466C25.0194 9.73203 25.0351 9.84558 25.0343 9.94307C25.0314 10.1713 24.9505 10.4053 24.7948 10.5754C24.5494 10.8409 24.1957 10.9771 24.1957 10.9771C24.2354 11.7595 24.0079 12.1513 23.6808 12.4189C22.8808 13.1089 22.0841 12.5949 21.9332 12.4496Z" fill="#F18A00"/>
-          <path d="M63.8938 21.2101L57.663 7.32715H55.9412L49.3928 22.0517H51.3534L53.7286 16.7853H58.8966L60.5863 20.4627L60.5899 20.4657C60.6242 20.542 60.677 20.6676 60.731 20.7851C61.2955 21.9904 62.5224 22.0517 62.6574 22.0517H64.2453L63.8938 21.2101ZM54.3296 15.4582L56.2938 11.1112L58.2894 15.4582H54.3299H54.3296Z" fill="#53575A"/>
-          <path d="M47.1665 9.0211C45.4947 7.72276 43.5738 7.10938 40.7742 7.10938H34.9131V20.1C34.9131 20.7284 34.9131 21.321 35.3915 21.7638C35.8691 22.206 36.6495 22.206 37.1731 22.206H42.3366C46.9011 22.206 49.7784 18.5848 49.7809 15.1049C49.7835 12.5148 48.842 10.318 47.1669 9.02146M41.3237 20.904H38.7322C38.4846 20.8832 38.3165 20.7769 38.2258 20.6521C38.139 20.525 38.1073 20.3439 38.1073 20.0924V8.41465H40.866C42.9258 8.4183 44.1248 8.8641 45.1574 9.91927C46.349 11.1373 46.7169 12.7332 46.7195 15.0177C46.6837 18.7637 44.7815 20.873 41.3233 20.9036" fill="#53575A"/>
-          <path d="M105.735 7.00355V7.00209C103.227 6.99843 101.288 7.91742 100.009 9.34683C98.7267 10.7722 98.0923 12.6843 98.0912 14.6742C98.0967 18.6247 101.45 22.3656 105.735 22.3787H105.746C108.23 22.3787 110.153 21.4587 111.423 20.0333C112.7 18.602 113.339 16.683 113.339 14.6742C113.33 10.7536 109.982 7.01596 105.735 7.00355ZM105.735 21.0523C103.204 21.0464 101.033 18.9777 101.01 14.6742C101.033 10.4042 103.204 8.33657 105.735 8.33146C108.223 8.33292 110.401 10.4042 110.424 14.6742C110.401 18.9777 108.223 21.0479 105.735 21.0523Z" fill="#53575A"/>
-          <path d="M122.349 7.00355V7.00209C119.843 6.99843 117.905 7.91742 116.623 9.34683C115.342 10.7722 114.707 12.6843 114.707 14.6742C114.713 18.6261 118.065 22.3656 122.349 22.3787H122.363C124.846 22.3787 126.767 21.4587 128.04 20.0296C129.317 18.602 129.952 16.683 129.952 14.6742C129.944 10.7536 126.598 7.01596 122.349 7.00355M122.349 21.0523C119.819 21.0464 117.646 18.9777 117.623 14.6742C117.646 10.4042 119.818 8.33401 122.349 8.33146C124.838 8.33292 127.015 10.4042 127.033 14.6742C127.015 18.9777 124.838 21.0479 122.349 21.0523Z" fill="#53575A"/>
-          <path d="M65.6601 19.9465C65.6462 20.8636 65.9719 21.243 66.5272 21.6672C67.0264 22.0517 67.6663 22.0481 68.4696 22.0517H76.7777V20.7238H69.3709C69.041 20.7238 68.8772 20.6709 68.742 20.5456C68.5957 20.4094 68.5764 20.1619 68.5764 19.9125V15.0434H75.1624V13.714H68.5764V8.65834H76.0389V7.32715H65.6601V19.9465Z" fill="#53575A"/>
-          <path d="M160 14.5168H154.174V15.844H156.994C157.061 15.8491 157.258 15.8768 157.399 16.0057C157.573 16.1583 157.585 16.3642 157.585 16.377V19.9069C157.336 20.344 155.99 21.0486 154.427 21.0486C151.233 21.0486 149.161 18.6754 149.137 15.2288C149.137 12.7245 149.659 11.1833 150.493 10.0982C151.332 9.01164 152.461 8.33071 153.88 8.33071C157.167 8.33071 157.428 11.3097 157.428 11.3097H159.93C159.93 10.4195 158.97 7.00098 153.739 7.00098C151.071 7.00098 149.481 7.91229 148.168 9.38698C146.849 10.8613 146.222 12.8705 146.222 15.0659C146.222 18.9076 149.412 22.3762 154.01 22.3773C155.838 22.3773 157.408 21.8982 158.288 21.4908C159.328 21.003 159.989 20.4447 160 19.77V14.5157L160 14.5168Z" fill="#53575A"/>
-          <path d="M96.888 7.32715L92.2473 18.5116L87.7357 7.32715H84.7403L87.312 13.809L85.3025 18.5116L80.7866 7.32715H77.7944L83.2993 21.1817C83.4575 21.5694 83.7901 22.3781 84.597 22.3781C85.2118 22.3781 85.5082 22.2554 86.0136 21.1645L88.1602 15.9452L90.2546 21.2101C90.4132 21.5993 90.7479 22.3781 91.5516 22.3781C92.1514 22.3781 92.5062 22.162 92.947 21.1966L98.6236 7.32715H96.888Z" fill="#53575A"/>
-          <path d="M144.516 7.35547H142.721V17.2211C141.731 15.9261 137.694 10.6466 136.214 8.71879C135.612 7.93636 135.092 7.35547 133.854 7.35547H131.717V22.0767H133.511V9.6323C133.511 9.6323 141.364 19.8715 142.048 20.8507C142.733 21.8255 143.261 22.3889 143.69 22.4032H143.712C143.889 22.4032 144.129 22.3619 144.299 22.1698C144.463 21.9789 144.513 21.7357 144.516 21.4111V7.35547Z" fill="#53575A"/>
-        </g>
-        <defs><clipPath id="lh"><rect width="160" height="28" fill="white"/></clipPath></defs>
-      </svg>
-      <div class="logo-divider"></div>
-      <span class="session-label">AX 임원 AI 교육</span>
-    </div>
-    <nav class="header-nav" aria-label="섹션 이동">
-      <a href="#prep">사전 준비</a>
-      <a href="#vscode">VSCode</a>
-      <a href="#claude-code">Claude Code</a>
-      <a href="#lab1">실습 1</a>
-      <a href="#lab2">실습 2</a>
-      <a href="#lab3">실습 3</a>
-    </nav>
-  </div>
-</header>
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress"></div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">
-      <span>✦</span> 대웅제약 AX팀 · AI 교육 프로그램
+<!-- SLIDE DECK -->
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════
+       SLIDE 1 — TITLE
+  ══════════════════════════════════════ -->
+  <div class="slide slide-title-hero active" id="s1">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">1 / 16</span>
     </div>
-    <h1>Claude로 만드는<br><span>나만의 AI 에이전트</span></h1>
-    <p class="subtitle">코딩을 전혀 몰라도 괜찮습니다. VSCode와 Claude Code만 있으면 오늘 바로 AI 에이전트를 직접 만들어볼 수 있습니다.</p>
-    <div class="hero-meta">
-      <div class="meta-chip"><span class="icon">⏱</span> 총 2시간</div>
-      <div class="meta-chip"><span class="icon">💻</span> VSCode + Claude Code</div>
-      <div class="meta-chip"><span class="icon">🎯</span> 실습 3가지</div>
-      <div class="meta-chip"><span class="icon">🤖</span> 커맨드 에이전트 2개 직접 구축</div>
+    <div class="slide-body">
+      <div class="hero-accent"></div>
+      <p class="eyebrow">대웅 AX TF · 임원 AI 교육</p>
+      <h1 class="slide-title">Claude로 만드는<br><span>나만의 AI 에이전트</span></h1>
+      <p class="slide-subtitle">VSCode + Claude Code 실습 교육</p>
+      <!-- 추가할 내용이 있으면 여기에 작성하세요 -->
     </div>
   </div>
-</section>
 
-<!-- AGENDA OVERVIEW -->
-<section class="overview" id="overview">
-  <div class="overview-inner">
-    <p class="section-eyebrow">오늘의 일정</p>
-    <h2 class="section-title">2시간 안에 이 모든 것을 해봅니다</h2>
-    <div class="agenda-grid">
-      <div class="agenda-card">
-        <span class="time">00:00 – 00:20</span>
-        <span class="title">환경 설치</span>
-        <span class="desc">VSCode 설치 및 Claude Code 확장 연결</span>
-        <span class="badge">준비</span>
-      </div>
-      <div class="agenda-card">
-        <span class="time">00:20 – 00:30</span>
-        <span class="title">VSCode 익히기</span>
-        <span class="desc">인터페이스 살펴보기, Claude와 첫 대화</span>
-        <span class="badge">기초</span>
-      </div>
-      <div class="agenda-card">
-        <span class="time">00:30 – 00:45</span>
-        <span class="title">실습 1 · 바이브코딩</span>
-        <span class="desc">말로만 하는 웹사이트 제작</span>
-        <span class="badge">실습</span>
-      </div>
-      <div class="agenda-card">
-        <span class="time">00:45 – 01:00</span>
-        <span class="title">실습 2 · 회의 에이전트</span>
-        <span class="desc">보고서 요약 + 질문 리스트 자동 생성</span>
-        <span class="badge">실습</span>
-      </div>
-      <div class="agenda-card">
-        <span class="time">01:00 – 01:15</span>
-        <span class="title">실습 3 · 의사결정 에이전트</span>
-        <span class="desc">경영 판단을 구조화해주는 AI</span>
-        <span class="badge">실습</span>
-      </div>
-      <div class="agenda-card">
-        <span class="time">01:15 – 01:38</span>
-        <span class="title">실습 4 · 자동 알림 에이전트</span>
-        <span class="desc">회의록 → 담당자별 이메일 자동 발송</span>
-        <span class="badge">실습</span>
-      </div>
-      <div class="agenda-card">
-        <span class="time">01:38 – 02:00</span>
-        <span class="title">실습 5 · 음성 브리핑 에이전트</span>
-        <span class="desc">말 한마디가 CEO 메시지로</span>
-        <span class="badge">실습</span>
-      </div>
+  <!-- ══════════════════════════════════════
+       SLIDE 2 — 오늘의 흐름
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">2 / 16</span>
     </div>
-  </div>
-</section>
-
-<!-- SECTION 1: INSTALLATION -->
-<section class="content-section alt-bg" id="prep">
-  <div class="content-inner">
-    <p class="section-eyebrow">Step 1</p>
-    <h2 class="section-title">VSCode 설치하기</h2>
-    <p style="color:var(--text-2); margin-bottom:24px; font-size:23px;">VSCode는 마이크로소프트가 만든 무료 코드 편집기입니다. 우리는 코딩 도구가 아니라 <strong>Claude와 대화하는 공간</strong>으로 사용할 거예요.</p>
-
-    <div class="os-tabs" role="tablist">
-      <button class="os-tab-btn active" onclick="switchOS('win')" role="tab" aria-selected="true">
-        <span>🪟</span> Windows
-      </button>
-      <button class="os-tab-btn" onclick="switchOS('mac')" role="tab" aria-selected="false">
-        <span>🍎</span> Mac
-      </button>
-    </div>
-
-    <!-- WINDOWS -->
-    <div id="os-win" class="os-content active">
-      <div class="step-list">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <strong>VSCode 홈페이지 접속</strong>
-            <p>브라우저 주소창에 <strong>code.visualstudio.com</strong> 을 입력하고 Enter</p>
+    <div class="slide-body">
+      <p class="eyebrow">오늘의 일정</p>
+      <h2 class="slide-title">2시간 안에 이 모든 것을</h2>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left">00:00</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag gray">준비</span>
+            <strong>환경 설치</strong>
+            <span>VSCode + Claude Code 설치 및 계정 연결</span>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <strong>다운로드 버튼 클릭</strong>
-            <p>파란색 "Download for Windows" 버튼을 클릭합니다</p>
-            <span class="tip">💡 자동으로 Windows용 파일이 선택됩니다</span>
+        <div class="tl-item">
+          <div class="tl-left">00:30</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 1</span>
+            <strong>바이브코딩 — 말로 만드는 웹사이트</strong>
+            <span>코드 한 줄 없이 자연어로 웹페이지 제작</span>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <strong>설치 파일 실행</strong>
-            <p>다운로드된 <strong>VSCodeSetup-x64-xxx.exe</strong> 파일을 더블클릭 → "동의함" 체크 → Next를 계속 클릭 → Install</p>
+        <div class="tl-item">
+          <div class="tl-left">00:45</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 2</span>
+            <strong>사장단 회의 준비 에이전트 구축</strong>
+            <span><span class="cmd">/보고서요약</span> — 파일 자동 읽기 · 요약 저장</span>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <strong>설치 완료 확인</strong>
-            <p>설치가 끝나면 "Launch Visual Studio Code" 체크 후 Finish 클릭</p>
-            <span class="tip">✅ 파란 아이콘의 VSCode가 열리면 성공!</span>
+        <div class="tl-item">
+          <div class="tl-left">01:10</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 3</span>
+            <strong>경영 의사결정 지원 에이전트 구축</strong>
+            <span><span class="cmd">/의사결정분석</span> — 파일 자동 읽기 · 분석 저장</span>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- MAC -->
-    <div id="os-mac" class="os-content">
-      <div class="step-list">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <strong>VSCode 홈페이지 접속</strong>
-            <p>브라우저 주소창에 <strong>code.visualstudio.com</strong> 을 입력하고 Enter</p>
+        <div class="tl-item">
+          <div class="tl-left">01:35</div>
+          <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag gray">마무리</span>
+            <strong>정리 & Q&A</strong>
+            <span>오늘 만든 에이전트 활용법 복습</span>
           </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <strong>Mac 버전 다운로드</strong>
-            <p>"Download for Mac" 버튼 클릭 → .zip 파일이 다운로드됩니다</p>
-            <span class="tip">💡 Apple Silicon(M1/M2)이면 "Apple Silicon" 버전 선택</span>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <strong>앱 설치</strong>
-            <p>다운로드된 .zip 파일을 더블클릭하여 압축 해제 → <strong>Visual Studio Code.app</strong> 파일을 <strong>Applications 폴더</strong>로 드래그</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <strong>앱 실행</strong>
-            <p>Launchpad 또는 Applications 폴더에서 Visual Studio Code 클릭</p>
-            <span class="tip">✅ "개발자를 확인할 수 없음" 팝업이 뜨면 → 시스템 환경설정 → 보안 → "확인 없이 열기" 클릭</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-box mt-24">
-      <strong>이미 설치되어 있다면?</strong> 바로 다음 단계로 넘어가세요. VSCode 버전은 최신이면 좋지만 크게 상관없습니다.
-    </div>
-  </div>
-</section>
-
-<!-- SECTION 2: VSCODE INTRO -->
-<section class="content-section" id="vscode">
-  <div class="content-inner">
-    <p class="section-eyebrow">Step 2</p>
-    <h2 class="section-title">VSCode 기본 화면 익히기</h2>
-    <p style="color:var(--text-2); margin-bottom:24px; font-size:23px;">복잡해 보이지만, 오늘 우리가 사용할 부분은 딱 하나입니다. 왼쪽 사이드바의 <strong style="color:var(--brand)">Claude 아이콘</strong>만 기억하면 됩니다.</p>
-
-    <div class="screen-mock">
-      <div class="titlebar">
-        <div class="dot r"></div>
-        <div class="dot y"></div>
-        <div class="dot g"></div>
-        <span style="font-size:18px; color:#777; margin-left:8px;">Visual Studio Code</span>
-      </div>
-      <div class="screen-body" style="display:grid; grid-template-columns:48px 1fr; min-height:200px; text-align:left; padding:0;">
-        <div style="background:#252526; height:100%; display:flex; flex-direction:column; align-items:center; padding-top:16px; gap:20px;">
-          <div style="width:26px;height:26px;background:#F18A00;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;">✦</div>
-          <div style="width:26px;height:26px;background:#444;border-radius:5px;"></div>
-          <div style="width:26px;height:26px;background:#444;border-radius:5px;"></div>
-          <div style="width:26px;height:26px;background:#444;border-radius:5px;"></div>
-        </div>
-        <div style="background:#1E1E1E; height:100%; padding:20px; color:#999; font-size:13px; display:flex; flex-direction:column; justify-content:center; gap:8px;">
-          <div style="color:#FFB766; font-weight:700; font-size:21px;">← 이 주황색 아이콘이 Claude Code입니다</div>
-          <div style="font-size:20px;">클릭하면 오른쪽에 대화창이 열립니다.</div>
-          <div style="font-size:20px;">여기서 Claude에게 한국어로 말하면 됩니다.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="step-list mt-24">
-      <div class="step-item">
-        <div class="step-num">A</div>
-        <div class="step-body">
-          <strong>사이드바 (왼쪽)</strong>
-          <p>Claude, 파일탐색기, 검색 등의 아이콘이 있습니다. 오늘은 Claude 아이콘만 씁니다.</p>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">B</div>
-        <div class="step-body">
-          <strong>편집창 (중앙)</strong>
-          <p>파일 내용이 표시되는 공간. Claude가 코드나 문서를 생성하면 여기에 나타납니다.</p>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">C</div>
-        <div class="step-body">
-          <strong>터미널 (아래)</strong>
-          <p>Claude가 자동으로 명령을 실행할 때 사용합니다. 직접 건드릴 필요는 없어요.</p>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- SECTION 3: CLAUDE CODE SETUP -->
-<section class="content-section alt-bg" id="claude-code">
-  <div class="content-inner">
-    <p class="section-eyebrow">Step 3</p>
-    <h2 class="section-title">Claude Code 확장 프로그램 연결하기</h2>
-    <p style="color:var(--text-2); margin-bottom:24px; font-size:23px;">VSCode에 Claude를 연결하는 작업입니다. 딱 한 번만 하면 됩니다.</p>
-
-    <div class="step-list">
-      <div class="step-item">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <strong>Extensions 패널 열기</strong>
-          <p>
-            Windows: <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">X</span>
-            &nbsp;/&nbsp;
-            Mac: <span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">X</span>
-          </p>
-          <p class="mt-8">또는 왼쪽 사이드바의 네모 아이콘(Extensions) 클릭</p>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <strong>Claude Code 검색</strong>
-          <p>검색창에 <strong>"Claude Code"</strong> 입력 → Anthropic이 만든 <strong>"Claude Code"</strong> 선택</p>
-          <span class="tip">💡 발행자가 "Anthropic"인 것을 골라야 합니다</span>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <strong>Install 클릭</strong>
-          <p>파란 Install 버튼을 클릭하면 자동으로 설치됩니다 (30초 이내)</p>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <strong>로그인하기</strong>
-          <p>설치 후 왼쪽 사이드바에 Claude 아이콘이 생깁니다 → 클릭 → <strong>"Sign in with Claude.ai"</strong> 선택 → 브라우저에서 로그인</p>
-          <span class="tip">✅ 로그인하면 VSCode 안에서 바로 대화할 수 있습니다</span>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">5</div>
-        <div class="step-body">
-          <strong>첫 대화 테스트</strong>
-          <p>Claude 패널에서 <strong>"안녕하세요"</strong> 입력 후 Enter → Claude가 답하면 완료!</p>
-        </div>
-      </div>
+  <!-- ══════════════════════════════════════
+       SLIDE 3 — 에이전트란?
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s3">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">3 / 16</span>
     </div>
-
-    <div class="info-box mt-24">
-      <strong>계정이 없다면?</strong> claude.ai 에서 이메일로 무료 가입 가능합니다. 회사 이메일(daewoong.co.kr)로 가입을 권장합니다.
+    <div class="slide-body">
+      <p class="eyebrow">핵심 개념</p>
+      <h2 class="slide-title">에이전트 = <span>캐릭터</span></h2>
+      <p class="slide-subtitle">프롬프트를 매번 다시 쓰는 게 아닙니다.<br>역할을 <strong>한 번</strong> 정의해두면, 이름만 불러서 일을 시킵니다.</p>
+      <div class="compare">
+        <div class="compare-box before">
+          <div class="compare-label">기존 방식</div>
+          <ul class="compare-list">
+            <li>새 대화 시작</li>
+            <li>역할 설명 다시 입력</li>
+            <li>프롬프트 붙여넣기</li>
+            <li>결과 확인 → 끝</li>
+          </ul>
+        </div>
+        <div class="compare-arrow">→</div>
+        <div class="compare-box after">
+          <div class="compare-label">에이전트 방식</div>
+          <ul class="compare-list">
+            <li>캐릭터 파일 한 번 정의</li>
+            <li>파일을 폴더에 넣기</li>
+            <li><span class="cmd">/보고서요약</span> 입력</li>
+            <li>결과 파일이 자동 저장 — 오늘도, 내일도</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
-</section>
 
-<!-- ───────────────────────────────── -->
-<!--   LABS DIVIDER                    -->
-<!-- ───────────────────────────────── -->
-<div style="background:var(--pastel-bg); border-top:1px solid var(--pastel-border); border-bottom:1px solid var(--pastel-border); padding:28px 24px; text-align:center;">
-  <p style="font-size:20px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--brand);">✦ 실습 시작 ✦</p>
-  <p style="font-size:30px; font-weight:800; color:var(--text); margin-top:4px;">이제부터 나만의 AI 에이전트를 직접 만들어봅니다</p>
-  <p style="font-size:21px; color:var(--text-2); margin-top:6px;">에이전트는 <strong>캐릭터</strong>입니다. 역할을 한 번 정의해두면, 이후엔 이름만 불러서 일을 시킬 수 있습니다.</p>
-</div>
-
-<!-- ═══════════════════════════════ -->
-<!--  LAB 1: VIBE CODING             -->
-<!-- ═══════════════════════════════ -->
-<section class="content-section" id="lab1">
-  <div class="content-inner">
-    <div class="practice-header">
-      <div class="practice-num">1</div>
-      <div class="practice-header-text">
-        <div class="tag">바이브코딩</div>
-        <h2>말로 만드는 웹사이트</h2>
+  <!-- ══════════════════════════════════════
+       SLIDE 5 — 환경: VSCode 설치
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s4">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">4 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">Step 1 · 환경 준비</p>
+      <h2 class="slide-title">VSCode 설치하기</h2>
+      <p class="slide-subtitle" style="margin-bottom:16px;">VSCode는 오늘 <strong>Claude와 대화하는 공간</strong>으로 사용합니다. Node.js 설치는 필요 없습니다.</p>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab-btn active" onclick="switchOS('win', this)" role="tab">🪟 Windows</button>
+        <button class="os-tab-btn" onclick="switchOS('mac', this)" role="tab">🍎 Mac</button>
+      </div>
+      <div id="os-win" class="os-content active">
+        <div class="step-list" style="margin-top:0;">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span>브라우저에서 <strong>code.visualstudio.com</strong> 입력 → Enter</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>다운로드 버튼 클릭</strong><span>파란색 "Download for Windows" 버튼 클릭</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>설치 파일 실행</strong><span>다운로드된 .exe 파일 더블클릭 → 설치 완료</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>VSCode 실행 확인</strong><span>시작 메뉴에서 "Visual Studio Code" 클릭</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="os-mac" class="os-content">
+        <div class="step-list" style="margin-top:0;">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span>Safari/Chrome에서 <strong>code.visualstudio.com</strong> 입력</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>"Mac" 다운로드</strong><span>"Download for Mac" 버튼 클릭</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>압축 해제 후 이동</strong><span>다운로드된 .zip 해제 → Visual Studio Code.app을 응용 프로그램 폴더로 이동</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>Launchpad에서 실행</strong><span>Launchpad → Visual Studio Code 클릭</span></div>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="practice-meta">
-      <div class="practice-chip">⏱ 약 20분</div>
-      <div class="practice-chip">🎯 난이도: ★☆☆</div>
-      <div class="practice-chip">💡 코딩 지식 불필요</div>
+  <!-- ══════════════════════════════════════
+       SLIDE 5 — 환경: VSCode 익히기
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">5 / 16</span>
     </div>
-
-    <div class="context-box">
-      <div class="context-title">🎬 이 실습에서 배우는 것</div>
-      <strong>"바이브코딩(Vibe Coding)"</strong>이란 코드를 직접 짜지 않고, 원하는 것을 말로 설명하면 AI가 자동으로 만들어주는 방식입니다. 오늘은 부서 소개 웹페이지를 5분 만에 만들어봅니다.
+    <div class="slide-body">
+      <p class="eyebrow">Step 2 · 환경 준비</p>
+      <h2 class="slide-title">VSCode 기본 화면</h2>
+      <p class="slide-subtitle" style="margin-bottom:20px;">오늘 쓸 부분은 딱 하나. 왼쪽 사이드바의 <strong style="color:var(--brand)">Claude 아이콘</strong>만 기억하면 됩니다.</p>
+      <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:32px; align-items:center;">
+        <!-- ★ 스크린샷 교체: 같은 폴더에 screenshot-s5.png 로 저장 후 아래 img 태그 사용 -->
+        <!-- <img src="screenshot-s5.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);"> -->
+        <div style="border:2px dashed var(--pastel-border); border-radius:12px; background:var(--pastel-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:240px; gap:10px; color:var(--text-3);">
+          <span style="font-size:36px;">📷</span>
+          <span style="font-weight:700; font-size:15px; color:var(--text-2);">VSCode 전체 화면 캡쳐</span>
+          <span style="font-size:12px; font-family:monospace; background:#EEE; padding:3px 10px; border-radius:4px; color:var(--text-3);">screenshot-s5.png</span>
+          <span style="font-size:11px; color:var(--text-3);">같은 폴더에 저장 후 위 주석 교체</span>
+        </div>
+        <div class="step-list" style="margin-top:0;">
+          <div class="step-item">
+            <div class="step-num">A</div>
+            <div class="step-text"><strong>사이드바 (왼쪽)</strong><span>Claude, 파일탐색기 등 아이콘. 오늘은 Claude 아이콘만 사용합니다.</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">B</div>
+            <div class="step-text"><strong>편집창 (중앙)</strong><span>Claude가 파일을 만들거나 코드를 생성하면 여기 나타납니다.</span></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">C</div>
+            <div class="step-text"><strong>터미널 (아래)</strong><span>Claude가 명령을 실행할 때 사용. 직접 건드릴 필요 없습니다.</span></div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <hr class="section-hr">
+  <!-- ══════════════════════════════════════
+       SLIDE 6 — 환경: Claude Code 연결
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">6 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">Step 3 · 환경 준비</p>
+      <h2 class="slide-title">Claude Code 확장 연결</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:center; margin-top:8px;">
+        <div>
+          <p style="font-size:clamp(14px,1.5vw,17px); color:var(--text-2); margin-bottom:14px;">VSCode에 Claude를 연결합니다. <strong>딱 한 번만</strong> 하면 됩니다.</p>
+          <div class="step-list" style="margin-top:0; gap:10px;">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Extensions 패널 열기</strong><span>Win: <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span> / Mac: <span class="kbd">⌘</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span></span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Claude Code 검색 → 설치</strong><span>"Claude Code" 검색 → 발행자 <strong>Anthropic</strong> 선택 → Install</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>로그인</strong><span>Claude 아이콘 → <strong>"Sign in with Claude.ai"</strong> → 브라우저 로그인</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>첫 대화 테스트</strong><span>채팅창에 <strong>"안녕하세요"</strong> → Claude 답하면 완료!</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- ★ 스크린샷 교체: 같은 폴더에 screenshot-s6.png 로 저장 후 아래 img 태그 사용 -->
+        <!-- <img src="screenshot-s6.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);"> -->
+        <div style="border:2px dashed var(--pastel-border); border-radius:12px; background:var(--pastel-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:260px; gap:10px;">
+          <span style="font-size:36px;">📷</span>
+          <span style="font-weight:700; font-size:15px; color:var(--text-2);">Claude Code 설치 화면 캡쳐</span>
+          <span style="font-size:12px; font-family:monospace; background:#EEE; padding:3px 10px; border-radius:4px; color:var(--text-3);">screenshot-s6.png</span>
+          <span style="font-size:11px; color:var(--text-3);">같은 폴더에 저장 후 위 주석 교체</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <div class="prompt-label">📋 프롬프트 1 — 기본 웹사이트 생성 (복사 후 Claude에 붙여넣기)</div>
-    <div class="prompt-wrap">
-      <pre class="prompt-box" id="p1a"><span class="comment"># 웹사이트 만들기 요청</span>
+  <!-- ══════════════════════════════════════
+       SLIDE 7 — 실습 1: 바이브코딩 소개
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s7">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">7 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 1 · 바이브코딩 · ★☆☆</p>
+      <h2 class="slide-title">말로 만드는 <span>웹사이트</span></h2>
+      <p class="slide-subtitle">코드 한 줄 없이 자연어만으로 웹페이지를 만들고 실시간 수정합니다.<br>AI에게 말로 지시하는 감각을 익히는 것이 목표입니다.</p>
+      <div class="cards col3 mt24">
+        <div class="card">
+          <span class="card-icon">💬</span>
+          <div class="card-label">지시</div>
+          <div class="card-title">원하는 것을 말로 설명</div>
+          <div class="card-desc">"오렌지 컬러, 카드형 레이아웃으로 팀 소개 페이지 만들어줘"</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">⚡</span>
+          <div class="card-label">생성</div>
+          <div class="card-title">Claude가 즉시 제작</div>
+          <div class="card-desc">HTML 파일 자동 생성 → 브라우저 미리보기 버튼 클릭</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔁</span>
+          <div class="card-label">수정</div>
+          <div class="card-title">말로 계속 다듬기</div>
+          <div class="card-desc">"배경 그라디언트 넣어줘" → 즉시 반영</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 8 — 실습 1: 바이브코딩 프롬프트
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s8">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">8 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 1 · 바이브코딩 · 프롬프트</p>
+      <h2 class="slide-title" style="font-size:clamp(24px,3vw,38px);">Claude 채팅창에 붙여넣기</h2>
+      <div class="prompt-label">📋 프롬프트 1 — 기본 웹사이트 생성</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p1a"><span class="comment"># 웹사이트 만들기 요청</span>
 
 저는 대웅제약 AX팀에서 일하고 있습니다.
 우리 팀을 소개하는 <span class="highlight">웹페이지 하나</span>를 만들어주세요.
@@ -914,155 +995,274 @@
 - 내용: 팀 소개, 주요 업무 3가지, 연락처 섹션
 - 깔끔하고 전문적인 디자인
 - HTML 파일 하나로 완성해주세요</pre>
-      <button class="copy-btn" onclick="copyPrompt('p1a', this)">복사</button>
-    </div>
-
-    <div class="prompt-label">📋 프롬프트 2 — 내용 수정 요청 (원하는 대로 바꿔보세요)</div>
-    <div class="prompt-wrap">
-      <pre class="prompt-box" id="p1b"><span class="comment"># 수정 요청 — 이렇게 원하는 부분을 자연스럽게 말하면 됩니다</span>
+        <button class="copy-btn" onclick="copyPrompt('p1a', this)">복사</button>
+      </div>
+      <div class="prompt-label">📋 프롬프트 2 — 내용 수정 (원하는 대로 바꿔보세요)</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p1b"><span class="comment"># 수정 요청 — 원하는 부분을 자연스럽게 말하면 됩니다</span>
 
 좋아요! 몇 가지 바꿔주세요:
 - 팀 소개 문구를 좀 더 <span class="highlight">임팩트 있게</span> 수정해주세요
 - 하단에 대웅제약 로고 이미지 자리를 만들어주세요
 - 배경에 은은한 <span class="highlight">그라디언트</span> 효과를 넣어주세요
 - 전체적으로 더 현대적인 느낌으로 개선해주세요</pre>
-      <button class="copy-btn" onclick="copyPrompt('p1b', this)">복사</button>
-    </div>
-
-    <div class="result-box">
-      <div class="result-title">✅ 이런 결과가 나옵니다</div>
-      <ul>
-        <li>Claude가 HTML 코드를 바로 생성합니다</li>
-        <li>코드 위에 "Open in Browser" 버튼이 생기면 클릭해서 미리보기</li>
-        <li>마음에 들 때까지 말로 수정 요청을 계속할 수 있습니다</li>
-        <li><strong>핵심:</strong> 코드는 볼 필요 없이 결과물만 확인하면 됩니다</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════ -->
-<!--  LAB 2: MEETING AGENT           -->
-<!-- ═══════════════════════════════ -->
-<section class="content-section alt-bg" id="lab2">
-  <div class="content-inner">
-    <div class="practice-header">
-      <div class="practice-num">2</div>
-      <div class="practice-header-text">
-        <div class="tag">에이전트 구축</div>
-        <h2>사장단 회의 준비 에이전트</h2>
+        <button class="copy-btn" onclick="copyPrompt('p1b', this)">복사</button>
+      </div>
+      <div class="result-box">
+        <div class="result-title">✅ 결과 확인 방법</div>
+        <ul>
+          <li>Claude가 HTML 코드 생성 → 코드 위 <strong>"Open in Browser"</strong> 버튼 클릭</li>
+          <li>마음에 들 때까지 말로 수정 요청 가능. 코드는 볼 필요 없습니다.</li>
+        </ul>
       </div>
     </div>
+  </div>
 
-    <div class="practice-meta">
-      <div class="practice-chip">⏱ 약 20분</div>
-      <div class="practice-chip">🎯 난이도: ★★☆</div>
-      <div class="practice-chip">📄 실제 업무 즉시 적용 가능</div>
+  <!-- ══════════════════════════════════════
+       SLIDE 9 — 커맨드 파일 구조
+  ══════════════════════════════════════ -->
+  <div class="slide" id="s9">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">9 / 16</span>
     </div>
-
-    <div class="context-box">
-      <div class="context-title">🎬 이 실습에서 만드는 것</div>
-      에이전트는 <strong>매번 새로 설명하는 존재가 아닙니다.</strong> 역할과 성격을 한 번 정의해두면, 이후엔 이름만 불러서 일을 시킬 수 있습니다.<br><br>
-      이번 실습에서는 <strong>"회의 준비 전문가"</strong> 캐릭터를 만들어 <code style="font-size:0.85em;background:#F2F2F0;padding:2px 7px;border-radius:4px;">/회의준비</code> 커맨드로 저장합니다.<br>
-      다음부터는 보고서를 붙여넣고 <code style="font-size:0.85em;background:#F2F2F0;padding:2px 7px;border-radius:4px;">/회의준비</code> 한 줄이면 끝입니다.
+    <div class="slide-body" style="flex-direction:row; gap:60px; align-items:center;">
+      <div style="flex:1;">
+        <p class="eyebrow">에이전트 구조</p>
+        <h2 class="slide-title">커맨드 파일 =<br><span>캐릭터 카드</span></h2>
+        <p class="slide-subtitle" style="margin-bottom:20px;">파일 안에 역할·성격·출력 형식을 정의합니다.<br>정의가 끝나면 슬래시(/) 하나로 호출합니다.</p>
+        <ul class="output-list">
+          <li><span class="oi">📄</span><div>파일을 한 번 만들면 <strong>영구적으로 재사용</strong></div></li>
+          <li><span class="oi">✏️</span><div>마음에 안 들면 파일만 수정하면 됨</div></li>
+          <li><span class="oi">➕</span><div>에이전트는 원하는 만큼 계속 추가 가능</div></li>
+        </ul>
+      </div>
+      <div style="flex:1;">
+        <div class="file-tree">
+          <span class="ft-folder">📁 my-agents/</span><br>
+          &nbsp;&nbsp;<span class="ft-folder">📁 .claude/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-folder">📁 commands/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 보고서요약.md</span>
+          &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/보고서요약</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 의사결정분석.md</span>
+          &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/의사결정분석</span>
+        </div>
+        <div class="hbox" style="margin-top:16px; background:var(--green-bg); border-left-color:var(--green);">
+          <p style="color:var(--green); font-weight:700; font-size:clamp(13px,1.4vw,16px);">
+            VSCode에서 채팅창에 <strong>/</strong> 만 입력하면<br>
+            내가 만든 에이전트 목록이 바로 뜹니다
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <hr class="section-hr">
+  <!-- ══════════════════════════════════════
+       SLIDE 10 — 실습 2: /보고서요약 소개
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s10">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">10 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 2 · 에이전트 구축 · ★★☆</p>
+      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/보고서요약</span> 에이전트</h2>
+      <p class="slide-subtitle" style="margin-bottom:20px;"><strong>파일을 폴더에 넣기만 하면</strong> 에이전트가 스스로 읽고, 분석하고, 결과 파일까지 저장합니다.</p>
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; align-items:center; gap:0; margin-top:8px;">
+        <div class="card" style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <span style="font-size:28px;">📄</span>
+          <div class="card-title">1분기실적보고서.txt</div>
+          <a id="dl-file1" href="1분기실적보고서.txt" download="1분기실적보고서.txt"
+             style="display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(11px,1.1vw,13px); padding:7px 14px; border-radius:7px; text-decoration:none;">
+            ⬇ 다운로드
+          </a>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center; background:var(--green-bg); border-color:var(--green-border);">
+          <span style="font-size:28px;">🤖</span>
+          <div class="card-title" style="margin-top:8px; color:var(--green);">/보고서요약</div>
+          <div class="card-desc">파일 자동 읽기 · 분석</div>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center;">
+          <span style="font-size:28px;">📝</span>
+          <div class="card-title" style="margin-top:8px;">회의준비_요약.md</div>
+          <div class="card-desc">결과 파일 자동 저장</div>
+        </div>
+      </div>
+      <div class="hbox" style="margin-top:12px;">
+        <p>파일 다운로드 → VSCode 폴더에 넣기 → <strong>/보고서요약</strong> 입력 → 나머지는 에이전트가 알아서</p>
+      </div>
+      <div class="admin-panel" style="display:none; margin-top:10px; border:1.5px dashed var(--pastel-border); border-radius:8px; padding:12px 16px; background:var(--pastel-bg);">
+        <p style="font-size:11px; font-weight:800; letter-spacing:0.08em; color:var(--brand); margin-bottom:8px;">🔧 강사용 — 파일 링크 교체</p>
+        <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">파일 URL (Google Drive 또는 파일명)</label>
+        <input id="url-file1" type="text" placeholder="https://drive.google.com/... 또는 1분기실적보고서.txt"
+          style="width:100%; padding:7px 10px; border:1.5px solid var(--pastel-border); border-radius:6px; font-size:11px; outline:none; box-sizing:border-box;"
+          oninput="updateDownloadLink(1, this.value)">
+      </div>
+    </div>
+  </div>
 
-    <div class="prompt-label">① Claude에게 커맨드 파일 만들어달라고 요청 (복사 후 Claude 채팅창에 붙여넣기)</div>
-    <div class="prompt-wrap">
-      <pre class="prompt-box" id="p2a"><span class="comment"># 에이전트 캐릭터 파일 생성 요청</span>
+  <!-- ══════════════════════════════════════
+       SLIDE 11 — /보고서요약 커맨드 파일 생성
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s11">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">11 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 2 · /보고서요약 · ① 에이전트 생성</p>
+      <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
+      <div class="context-note">이 프롬프트를 Claude에게 주면, 파일을 읽고 결과를 저장하는 <strong>자율 실행 에이전트</strong>가 만들어집니다.</div>
+      <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p2a"><span class="comment"># 에이전트 생성 요청 — 파일 자동 읽기 + 결과 저장형</span>
 
-.claude/commands/ 폴더 안에 <span class="highlight">회의준비.md</span> 파일을 만들어줘.
+.claude/commands/ 폴더 안에 <span class="highlight">보고서요약.md</span> 파일을 만들어줘.
 
-이 파일은 내가 /회의준비 커맨드로 부를 에이전트야.
+이 파일은 내가 /보고서요약 커맨드로 부를 에이전트야.
 이 에이전트의 역할: <span class="highlight">사장단 회의 준비 전문가</span>
 
-내가 보고서 텍스트를 입력하면 반드시 아래 형식으로 분석해:
+호출되면 반드시 이 순서대로 실행해:
+1. 현재 폴더에서 <span class="highlight">.txt 파일을 찾아서 내용을 읽어</span>
+2. 아래 형식으로 분석해:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📌 핵심 요약 — 3줄
 ❓ 사장이 반드시 물어봐야 할 질문 5가지
 ⚠️ 리스크 및 우려사항
 💡 추가 확인이 필요한 사항
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</pre>
-      <button class="copy-btn" onclick="copyPrompt('p2a', this)">복사</button>
-    </div>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    <div class="result-box" style="margin-bottom:20px;">
-      <div class="result-title">⚙️ Claude가 파일을 만들면</div>
-      <ul>
-        <li>왼쪽 탐색기에 <strong>.claude/commands/회의준비.md</strong> 파일이 생성됩니다</li>
-        <li>파일 내용을 클릭해서 열어보세요 — 에이전트의 성격과 역할이 정의되어 있습니다</li>
-        <li>이 파일이 바로 <strong>"회의 준비 전문가"의 캐릭터 카드</strong>입니다</li>
-      </ul>
-    </div>
-
-    <div class="prompt-label">② 에이전트 호출 테스트 — 채팅창에 /회의준비 입력 후 보고서 붙여넣기</div>
-    <div class="prompt-wrap">
-      <pre class="prompt-box" id="p2b"><span class="comment"># /회의준비 커맨드 호출 — Claude 채팅창에 입력</span>
-
-/회의준비
-
-2026년 1분기 실적 보고서
-- 매출: 3,200억 원 (전년 동기 대비 +8.3%)
-- 영업이익: 280억 원 (전년 동기 대비 -2.1%)
-- 주요 원인: 원자재 가격 상승, 인건비 증가
-- 신약 파이프라인: 3건 임상 2상 진행 중
-- 하반기 전망: 신제품 출시 2건 예정</pre>
-      <button class="copy-btn" onclick="copyPrompt('p2b', this)">복사</button>
-    </div>
-
-    <div class="result-box">
-      <div class="result-title">✅ 이제부터 이 에이전트는 영구적입니다</div>
-      <ul>
-        <li>내일, 다음 주, 한 달 뒤에도 <strong>/회의준비</strong> 한 줄이면 이 에이전트가 깨어납니다</li>
-        <li>마음에 안 드는 부분은? Claude에게 "회의준비.md에서 질문 항목을 7개로 늘려줘" 라고 수정 요청하면 됩니다</li>
-        <li>PDF 보고서는 텍스트를 복사해서 붙여넣기 하세요</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════ -->
-<!--  LAB 3: DECISION AGENT          -->
-<!-- ═══════════════════════════════ -->
-<section class="content-section" id="lab3">
-  <div class="content-inner">
-    <div class="practice-header">
-      <div class="practice-num">3</div>
-      <div class="practice-header-text">
-        <div class="tag">에이전트 구축</div>
-        <h2>경영 의사결정 지원 에이전트</h2>
+3. 분석 결과를 <span class="highlight">'회의준비_요약.md'</span> 파일로 저장해</pre>
+        <button class="copy-btn" onclick="copyPrompt('p2a', this)">복사</button>
+      </div>
+      <div class="result-box">
+        <div class="result-title">⚙️ 파일이 만들어지면</div>
+        <ul>
+          <li>탐색기에 <strong>.claude/commands/보고서요약.md</strong> 파일 생성 확인</li>
+          <li>이제 다음 슬라이드에서 <strong>/보고서요약</strong> 한 줄만 입력하면 됩니다</li>
+        </ul>
       </div>
     </div>
+  </div>
 
-    <div class="practice-meta">
-      <div class="practice-chip">⏱ 약 20분</div>
-      <div class="practice-chip">🎯 난이도: ★★☆</div>
-      <div class="practice-chip">🧠 복잡한 판단을 구조화</div>
+  <!-- ══════════════════════════════════════
+       SLIDE 12 — /보고서요약 호출 테스트
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s12">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">12 / 16</span>
     </div>
-
-    <div class="context-box">
-      <div class="context-title">🎬 이 실습에서 만드는 것</div>
-      두 번째 에이전트를 만들어봅니다. <strong>"전략적 의사결정 파트너"</strong> 캐릭터입니다.<br><br>
-      이 에이전트는 선택지를 구조화하고 권고안을 제시하는 것에서 끝나지 않습니다.<br>
-      <strong>악마의 변호인(Devil's Advocate)</strong> 역할까지 동시에 수행해서, 내 결정의 약점을 스스로 찾아줍니다.<br><br>
-      만들고 나면 <code style="font-size:0.85em;background:#F2F2F0;padding:2px 7px;border-radius:4px;">/의사결정</code> 한 줄로 언제든 이 파트너를 불러낼 수 있습니다.
+    <div class="slide-body" style="align-items:center; text-align:center;">
+      <p class="eyebrow">실습 2 · /보고서요약 · ② 실행</p>
+      <h2 class="slide-title">이게 전부입니다</h2>
+      <p class="slide-subtitle" style="margin-bottom:32px;">Claude 채팅창에 아래 한 줄만 입력하세요.</p>
+      <div class="prompt-wrap" style="max-width:400px; margin:0 auto;">
+        <pre class="prompt-box" id="p2b" style="font-size:clamp(20px,2.5vw,32px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/보고서요약</pre>
+        <button class="copy-btn" onclick="copyPrompt('p2b', this)">복사</button>
+      </div>
+      <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
+        <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
+        <ul>
+          <li>폴더의 <strong>1분기실적보고서.txt</strong> 파일을 찾아 읽기</li>
+          <li>핵심 요약 · 질문 · 리스크 분석</li>
+          <li><strong>회의준비_요약.md</strong> 파일로 저장 — 왼쪽 탐색기에서 확인</li>
+        </ul>
+      </div>
     </div>
+  </div>
 
-    <hr class="section-hr">
+  <!-- ══════════════════════════════════════
+       SLIDE 13 — 실습 3: /의사결정분석 소개
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s13">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">13 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 3 · 에이전트 구축 · ★★☆</p>
+      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/의사결정분석</span> 에이전트</h2>
+      <p class="slide-subtitle" style="margin-bottom:20px;"><strong>의사결정안건.txt</strong>를 넣으면 선택지 분석 + 악마의 변호인 + 실행계획이 담긴 <strong>의사결정_분석.md</strong>가 자동 생성됩니다.</p>
+      <div class="cards col3 mt16">
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <div class="card-title">선택지 분석</div>
+          <div class="card-desc">각 대안의 장단점 · 판단 기준 · 권고안</div>
+        </div>
+        <div class="card" style="background:var(--pastel-bg); border-color:var(--brand);">
+          <span class="card-icon">😈</span>
+          <div class="card-title" style="color:var(--brand);">악마의 변호인</div>
+          <div class="card-desc">권고안의 가장 큰 약점 3가지를 <strong>자동으로</strong> 함께 제공</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">📋</span>
+          <div class="card-title">실행 계획</div>
+          <div class="card-desc">결정 후 첫 3가지 액션까지 제시</div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; align-items:center; gap:0; margin-top:12px;">
+        <div class="card" style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <span style="font-size:28px;">📄</span>
+          <div class="card-title">의사결정안건.txt</div>
+          <a id="dl-file2" href="의사결정안건.txt" download="의사결정안건.txt"
+             style="display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(11px,1.1vw,13px); padding:7px 14px; border-radius:7px; text-decoration:none;">
+            ⬇ 다운로드
+          </a>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center; background:var(--green-bg); border-color:var(--green-border);">
+          <span style="font-size:28px;">🤖</span>
+          <div class="card-title" style="margin-top:8px; color:var(--green);">/의사결정분석</div>
+          <div class="card-desc">파일 자동 읽기 · 분석</div>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center;">
+          <span style="font-size:28px;">📝</span>
+          <div class="card-title" style="margin-top:8px;">의사결정_분석.md</div>
+          <div class="card-desc">결과 파일 자동 저장</div>
+        </div>
+      </div>
+      <div class="hbox" style="margin-top:12px;">
+        <p>파일 다운로드 → VSCode 폴더에 넣기 → <strong>/의사결정분석</strong> 입력 → 나머지는 에이전트가 알아서</p>
+      </div>
+      <div class="admin-panel" style="display:none; margin-top:10px; border:1.5px dashed var(--pastel-border); border-radius:8px; padding:12px 16px; background:var(--pastel-bg);">
+        <p style="font-size:11px; font-weight:800; letter-spacing:0.08em; color:var(--brand); margin-bottom:8px;">🔧 강사용 — 파일 링크 교체</p>
+        <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">파일 URL (Google Drive 또는 파일명)</label>
+        <input id="url-file2" type="text" placeholder="https://drive.google.com/... 또는 의사결정안건.txt"
+          style="width:100%; padding:7px 10px; border:1.5px solid var(--pastel-border); border-radius:6px; font-size:11px; outline:none; box-sizing:border-box;"
+          oninput="updateDownloadLink(2, this.value)">
+      </div>
+    </div>
+  </div>
 
-    <div class="prompt-label">① Claude에게 커맨드 파일 만들어달라고 요청 (복사 후 Claude 채팅창에 붙여넣기)</div>
-    <div class="prompt-wrap">
-      <pre class="prompt-box" id="p3a"><span class="comment"># 에이전트 캐릭터 파일 생성 요청</span>
+  <!-- ══════════════════════════════════════
+       SLIDE 14 — /의사결정분석 커맨드 파일 생성
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s14">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">14 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 3 · /의사결정분석 · ① 에이전트 생성</p>
+      <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
+      <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p3a"><span class="comment"># 에이전트 생성 요청 — 파일 자동 읽기 + 결과 저장형</span>
 
-.claude/commands/ 폴더 안에 <span class="highlight">의사결정.md</span> 파일을 만들어줘.
+.claude/commands/ 폴더 안에 <span class="highlight">의사결정분석.md</span> 파일을 만들어줘.
 
-이 파일은 내가 /의사결정 커맨드로 부를 에이전트야.
+이 파일은 내가 /의사결정분석 커맨드로 부를 에이전트야.
 이 에이전트의 역할: <span class="highlight">전략적 의사결정 파트너 (글로벌 컨설팅 파트너급)</span>
 
-내가 경영 상황을 설명하면 반드시 아래 형식으로 분석해:
+호출되면 반드시 이 순서대로 실행해:
+1. 현재 폴더에서 <span class="highlight">.txt 파일을 찾아서 내용을 읽어</span>
+2. 아래 형식으로 분석해:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔍 상황 정의 — 핵심 이슈 한 문장
@@ -1073,106 +1273,171 @@
 😈 악마의 변호인 — 권고안의 가장 큰 약점 3가지
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-분석 후 반드시 "이 결정에서 추가로 고려할 점이 있나요?" 라고 물어봐줘.</pre>
-      <button class="copy-btn" onclick="copyPrompt('p3a', this)">복사</button>
-    </div>
-
-    <div class="result-box" style="margin-bottom:20px;">
-      <div class="result-title">⚙️ Claude가 파일을 만들면</div>
-      <ul>
-        <li>왼쪽 탐색기에 <strong>.claude/commands/의사결정.md</strong> 파일이 생성됩니다</li>
-        <li>이제 커맨드 폴더에 에이전트가 2명입니다: <strong>회의준비</strong> + <strong>의사결정</strong></li>
-      </ul>
-    </div>
-
-    <div class="prompt-label">② 에이전트 호출 테스트 — /의사결정 입력 후 상황 붙여넣기</div>
-    <div class="prompt-wrap">
-      <pre class="prompt-box" id="p3b"><span class="comment"># /의사결정 커맨드 호출 — Claude 채팅창에 입력</span>
-
-/의사결정
-
-신규 AI 자동화 솔루션 도입 검토 중:
-- A사: 기능 우수, 연 5억 원
-- B사: 기능 70% 수준, 연 1.5억 원
-- 현재 예산: 2억 원 (6개월 후 증액 가능)
-
-지금 B를 도입할지, 기다렸다가 A를 선택할지 분석해줘.</pre>
-      <button class="copy-btn" onclick="copyPrompt('p3b', this)">복사</button>
-    </div>
-
-    <div class="result-box">
-      <div class="result-title">✅ 핵심은 악마의 변호인입니다</div>
-      <ul>
-        <li>권고안과 반론이 <strong>동시에</strong> 나옵니다 — 매번 따로 요청할 필요 없습니다</li>
-        <li>숫자와 조건이 구체적일수록 분석이 정확해집니다</li>
-        <li>이제 <strong>/회의준비</strong>, <strong>/의사결정</strong> 두 에이전트가 준비됐습니다</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-
-<!-- WRAP UP -->
-<section class="content-section" style="background: linear-gradient(160deg, var(--white) 0%, var(--pastel-bg) 100%); border-top: 2px solid var(--pastel-border);">
-  <div class="content-inner" style="text-align:center;">
-    <p class="section-eyebrow" style="text-align:center;">마무리</p>
-    <h2 class="section-title" style="text-align:center;">오늘 배운 것을 정리하면</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px; margin-top:8px; text-align:left;">
-      <div class="agenda-card" style="border-color:var(--pastel); background:var(--white);">
-        <span style="font-size:36px;">💻</span>
-        <span class="title" style="font-size:21px;">VSCode 설치 완료</span>
-        <span class="desc">개발자 도구를 나의 AI 작업 공간으로</span>
-      </div>
-      <div class="agenda-card" style="border-color:var(--pastel); background:var(--white);">
-        <span style="font-size:36px;">✦</span>
-        <span class="title" style="font-size:21px;">Claude Code 연결</span>
-        <span class="desc">AI와 대화하는 환경 구축 완료</span>
-      </div>
-      <div class="agenda-card" style="border-color:var(--pastel); background:var(--white);">
-        <span style="font-size:36px;">🌐</span>
-        <span class="title" style="font-size:21px;">바이브코딩 체험</span>
-        <span class="desc">코딩 없이 말로만 만드는 웹사이트</span>
-      </div>
-      <div class="agenda-card" style="border-color:var(--pastel); background:var(--white);">
-        <span style="font-size:36px;">📋</span>
-        <span class="title" style="font-size:21px;">/회의준비 에이전트</span>
-        <span class="desc">보고서 → 요약·질문·리스크 자동 추출</span>
-      </div>
-      <div class="agenda-card" style="border-color:var(--pastel); background:var(--white);">
-        <span style="font-size:36px;">⚖️</span>
-        <span class="title" style="font-size:21px;">/의사결정 에이전트</span>
-        <span class="desc">권고안 + 악마의 변호인 반론 동시 제공</span>
+3. 분석 결과를 <span class="highlight">'의사결정_분석.md'</span> 파일로 저장해
+4. 마지막에 "이 결정에서 추가로 고려할 점이 있나요?" 라고 물어봐</pre>
+        <button class="copy-btn" onclick="copyPrompt('p3a', this)">복사</button>
       </div>
     </div>
   </div>
-</section>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <svg width="160" height="28" viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#ft)">
-      <path d="M3.461 18.2407C3.27175 18.1231 3.13575 18.2181 3.08543 18.2743C3.04167 18.3236 2.97531 18.4674 3.0847 18.6416C3.80412 19.7767 5.01688 23.1215 2.06665 27.9946H6.91588C7.62362 24.7335 7.23821 20.5577 3.461 18.2407Z" fill="#F18A00"/>
-      <path d="M14.0499 19.953C13.7709 19.8917 13.5653 20.1334 13.8001 20.3616C13.8001 20.3616 16.0791 22.3704 15.6255 27.9946H19.83C19.83 27.9946 19.7308 21.2287 14.0499 19.953Z" fill="#F18A00"/>
-      <path d="M25.7228 11.5021C25.7228 11.5021 27.0763 10.7646 26.176 9.4655C26.176 9.4655 26.9647 8.72798 26.2314 7.88311C26.2314 7.88311 26.7379 6.97545 26.0072 6.35476C26.0072 6.35476 27.0409 4.69642 25.8358 4.01549C25.4796 3.81358 25.1368 3.8092 24.8495 3.88296C24.6744 3.92786 24.506 4.00563 24.3517 4.10348C24.0371 4.29882 23.826 4.54928 23.6207 4.85707C23.3775 5.22255 23.0059 5.84944 22.4455 6.91849L20.3116 4.99837C20.1618 4.85671 20.3441 4.60515 20.425 4.47772C20.572 4.255 20.7765 4.09436 21.0026 3.95415C21.2407 3.80519 21.5003 3.69383 21.768 3.61022C21.9641 3.54596 22.4207 3.46381 22.4148 3.1845C22.4115 3.00523 22.2048 2.94316 22.063 2.92381C21.9492 2.90665 21.8303 2.89387 21.7115 2.88876C21.629 2.8862 21.5029 2.90665 21.4475 2.82121C21.4139 2.76973 21.4052 2.69744 21.4161 2.63829C21.4358 2.55541 21.5383 2.52328 21.6101 2.50831C21.6101 2.50831 22.3765 2.32539 22.3357 2.14028C22.3357 2.14028 22.3357 2.02637 21.7738 0.891966C21.7738 0.891966 21.66 0.678011 21.1813 1.08036C21.1022 1.14389 21.0449 1.22385 20.9399 1.24649C20.7065 1.29286 20.5111 1.05371 20.3572 0.911317C20.1596 0.727301 19.9525 0.553143 19.7133 0.424259C19.3873 0.249006 19.0249 0.159919 18.654 0.143489C18.5946 0.139838 18.5319 0.139838 18.4703 0.139838C18.1694 0.143489 17.83 0.191318 17.5481 0.303407C17.4329 0.349776 17.2932 0.352697 17.1908 0.28004C17.0985 0.221622 17.0194 0.138742 16.9202 0.088722C16.7984 0.0299391 16.6686 0 16.5344 0C16.052 0 15.6651 0.387748 15.6651 0.871155C15.6651 0.90365 15.6673 0.935049 15.6713 0.964988C15.6732 0.982879 15.6754 0.997848 15.6772 1.01428C15.698 1.13403 15.7421 1.25051 15.811 1.35091C15.8238 1.37209 15.8394 1.39071 15.8515 1.40933C15.8799 1.44365 15.9109 1.47687 15.9109 1.52324C15.9109 1.56121 15.8981 1.59079 15.8708 1.61708C15.5671 1.92852 14.9596 2.52109 14.397 4.23857C14.397 4.23857 11.7516 2.10194 9.43033 2.92673C9.27572 2.9815 9.12768 3.04795 8.98511 3.12827C8.98511 3.12827 10.1363 3.8092 10.5581 4.49488C10.5891 4.54782 10.5796 4.58652 10.5643 4.61537C10.5494 4.64531 10.5279 4.67671 10.448 4.69168C10.448 4.69168 10.4469 4.68876 10.4458 4.68876L5.61337 5.45257C5.57399 5.46133 5.543 5.45111 5.52987 5.41971C5.51601 5.38977 5.53716 5.35983 5.55065 5.35107L9.7935 1.77334C9.7935 1.77334 9.95868 1.63789 10.0874 1.4327C10.1662 1.32681 10.2139 1.19647 10.2139 1.05481C10.2139 0.733143 9.97399 0.467707 9.66369 0.423894C9.62869 0.417322 9.59368 0.412575 9.55977 0.408924C9.3213 0.37862 9.10617 0.385557 9.10617 0.385557H5.32714C5.32714 0.385557 5.24436 0.387748 5.14992 0.407464V0.408924C5.02741 0.438863 4.93625 0.548762 4.93625 0.680567C4.93625 0.780607 5.00298 0.868234 5.08867 0.947098C5.28083 1.12308 5.44127 1.20341 5.44965 1.48491C5.45549 1.78065 5.29942 2.0585 5.15868 2.3075L3.31437 5.5318C3.28447 5.57707 3.24509 5.67017 3.15539 5.74247C3.0657 5.8133 2.97235 5.82973 2.84181 5.84981C2.1224 5.94875 0.409725 6.18681 0.272623 6.20433C0.0779105 6.22916 0.000244141 6.35439 0.000244141 6.49752C0.000244141 6.61983 0.0779105 6.72352 0.18657 6.76405C0.305805 6.8075 0.403161 6.84547 0.564328 6.90279C0.564328 6.90279 1.01538 8.25443 1.08611 8.44502C1.15685 8.63524 1.4657 9.0982 2.25877 8.83204C2.55631 8.73309 2.976 8.81196 2.976 9.37788V16.8882C2.976 16.9061 2.97891 16.9474 3.00152 16.9831C3.02486 17.0204 3.06825 17.0452 3.11018 17.0525C3.44345 17.1153 4.35321 17.319 5.20863 17.8291C5.24291 17.8463 5.26551 17.8598 5.29724 17.8397C5.32969 17.8211 5.32714 17.7882 5.32714 17.7696V15.6589H9.52003L9.51383 16.7407C9.51383 16.7407 9.51383 17.8138 8.37873 17.8138C8.37873 17.8138 6.01483 17.8123 5.92841 17.8123C5.82413 17.8123 5.74464 17.8857 5.73625 17.9671C5.72276 18.0996 5.80371 18.169 5.93935 18.2501C5.93935 18.2501 10.9042 21.1345 9.60535 27.9942L13.7629 28C13.7629 28 14.0969 23.6643 10.9042 21.1348C10.8068 21.0592 10.7729 20.9979 10.7714 20.9552C10.766 20.8668 10.8615 20.8453 10.9242 20.8318C10.9548 20.8219 10.9855 20.8139 11.0154 20.8077C11.7253 20.6102 14.9982 19.5112 15.0343 15.8593L15.0562 8.97881C15.093 7.60052 15.2396 7.34749 15.5087 7.34749C15.6841 7.34749 15.7917 7.62826 15.9033 8.04084C16.1133 8.83824 16.4232 9.52794 17.0146 10.1154C17.4077 10.5021 17.8001 10.8891 18.1931 11.2757C18.1931 11.2757 20.2934 13.3353 20.4455 13.5029C20.751 13.8406 22.0075 15.8838 18.8243 17.7272C18.6529 17.8276 18.4455 17.8747 18.3561 18.0701C18.2435 18.3118 18.5111 18.5491 18.6555 18.7061C19.0774 19.1632 19.3961 19.6525 19.6899 20.1936C20.5975 21.853 21.8814 25.0499 21.259 27.9942H26.0881C26.0881 27.9942 26.5333 21.2568 20.44 18.9164C20.3503 18.8821 20.2788 18.8087 20.3124 18.7046C20.3499 18.605 20.4549 18.5597 20.5373 18.502C21.0238 18.1712 22.8163 16.7969 22.4743 14.7403C22.4743 14.7403 25.6648 14.8377 25.7228 11.5021ZM9.57436 14.0769H5.34063V12.987H9.57436V14.0769ZM9.57436 11.4053H5.34063V10.3162H9.57436V11.4053ZM12.2734 18.3027L12.2708 18.3012C12.2435 18.3198 12.2121 18.3297 12.1771 18.3297C12.0859 18.3297 12.0115 18.2563 12.0115 18.165C12.0115 18.1621 12.0126 18.1599 12.0126 18.1559L12.0115 18.1537V9.89816C12.0115 8.82692 11.2965 8.73638 10.9607 8.73638H5.15795C4.73388 8.73638 4.53662 8.54652 4.44728 8.37638C4.41957 8.32563 4.39587 8.26575 4.42431 8.18798C4.45421 8.11021 4.5089 8.07954 4.56178 8.06019L10.4699 6.09042C10.5348 6.06815 10.6198 6.04368 10.7109 6.01374C10.7346 6.00863 10.7795 5.98234 10.8323 6.01374C10.8921 6.04806 10.8885 6.07946 10.898 6.11415C10.9508 6.32956 11.0551 6.67606 11.2024 6.94295C11.931 8.26721 13.4052 8.33366 13.4052 8.33366L13.4074 16.2719C13.4074 17.5155 12.689 18.0175 12.2734 18.3027ZM18.4976 0.786814C18.7937 0.786814 19.0387 1.02998 19.0387 1.32864C19.0387 1.63022 18.7937 1.87192 18.4976 1.87192C18.1982 1.87192 17.9514 1.63022 17.9514 1.32864C17.9514 1.02998 18.1982 0.786814 18.4976 0.786814ZM21.9332 12.4496C21.7581 12.2794 17.9452 8.53922 17.8052 8.39536C17.6644 8.25114 16.844 7.34749 17.6644 6.49131C18.2588 5.87208 19.062 6.22113 19.3807 6.51139C19.695 6.80056 23.0548 9.87114 23.0548 9.87114C23.2867 7.89188 24.141 7.42782 24.141 7.42782C24.141 7.42782 24.6245 7.08133 24.9523 7.54392C25.2163 7.91634 24.7959 8.43662 24.7959 8.43662C25.0602 8.50782 25.1167 8.78202 25.077 9.02481C25.0526 9.17232 24.9826 9.30887 24.8794 9.41256C24.8032 9.48668 24.7401 9.51881 24.7401 9.51881C24.8546 9.50895 24.9293 9.56518 24.9727 9.6466C25.0194 9.73203 25.0351 9.84558 25.0343 9.94307C25.0314 10.1713 24.9505 10.4053 24.7948 10.5754C24.5494 10.8409 24.1957 10.9771 24.1957 10.9771C24.2354 11.7595 24.0079 12.1513 23.6808 12.4189C22.8808 13.1089 22.0841 12.5949 21.9332 12.4496Z" fill="#F18A00"/>
-      <path d="M63.8938 21.2101L57.663 7.32715H55.9412L49.3928 22.0517H51.3534L53.7286 16.7853H58.8966L60.5863 20.4627L60.5899 20.4657C60.6242 20.542 60.677 20.6676 60.731 20.7851C61.2955 21.9904 62.5224 22.0517 62.6574 22.0517H64.2453L63.8938 21.2101ZM54.3296 15.4582L56.2938 11.1112L58.2894 15.4582H54.3299H54.3296Z" fill="#53575A"/>
-      <path d="M47.1665 9.0211C45.4947 7.72276 43.5738 7.10938 40.7742 7.10938H34.9131V20.1C34.9131 20.7284 34.9131 21.321 35.3915 21.7638C35.8691 22.206 36.6495 22.206 37.1731 22.206H42.3366C46.9011 22.206 49.7784 18.5848 49.7809 15.1049C49.7835 12.5148 48.842 10.318 47.1669 9.02146M41.3237 20.904H38.7322C38.4846 20.8832 38.3165 20.7769 38.2258 20.6521C38.139 20.525 38.1073 20.3439 38.1073 20.0924V8.41465H40.866C42.9258 8.4183 44.1248 8.8641 45.1574 9.91927C46.349 11.1373 46.7169 12.7332 46.7195 15.0177C46.6837 18.7637 44.7815 20.873 41.3233 20.9036" fill="#53575A"/>
-      <path d="M105.735 7.00355V7.00209C103.227 6.99843 101.288 7.91742 100.009 9.34683C98.7267 10.7722 98.0923 12.6843 98.0912 14.6742C98.0967 18.6247 101.45 22.3656 105.735 22.3787H105.746C108.23 22.3787 110.153 21.4587 111.423 20.0333C112.7 18.602 113.339 16.683 113.339 14.6742C113.33 10.7536 109.982 7.01596 105.735 7.00355ZM105.735 21.0523C103.204 21.0464 101.033 18.9777 101.01 14.6742C101.033 10.4042 103.204 8.33657 105.735 8.33146C108.223 8.33292 110.401 10.4042 110.424 14.6742C110.401 18.9777 108.223 21.0479 105.735 21.0523Z" fill="#53575A"/>
-      <path d="M122.349 7.00355V7.00209C119.843 6.99843 117.905 7.91742 116.623 9.34683C115.342 10.7722 114.707 12.6843 114.707 14.6742C114.713 18.6261 118.065 22.3656 122.349 22.3787H122.363C124.846 22.3787 126.767 21.4587 128.04 20.0296C129.317 18.602 129.952 16.683 129.952 14.6742C129.944 10.7536 126.598 7.01596 122.349 7.00355M122.349 21.0523C119.819 21.0464 117.646 18.9777 117.623 14.6742C117.646 10.4042 119.818 8.33401 122.349 8.33146C124.838 8.33292 127.015 10.4042 127.033 14.6742C127.015 18.9777 124.838 21.0479 122.349 21.0523Z" fill="#53575A"/>
-      <path d="M65.6601 19.9465C65.6462 20.8636 65.9719 21.243 66.5272 21.6672C67.0264 22.0517 67.6663 22.0481 68.4696 22.0517H76.7777V20.7238H69.3709C69.041 20.7238 68.8772 20.6709 68.742 20.5456C68.5957 20.4094 68.5764 20.1619 68.5764 19.9125V15.0434H75.1624V13.714H68.5764V8.65834H76.0389V7.32715H65.6601V19.9465Z" fill="#53575A"/>
-      <path d="M160 14.5168H154.174V15.844H156.994C157.061 15.8491 157.258 15.8768 157.399 16.0057C157.573 16.1583 157.585 16.3642 157.585 16.377V19.9069C157.336 20.344 155.99 21.0486 154.427 21.0486C151.233 21.0486 149.161 18.6754 149.137 15.2288C149.137 12.7245 149.659 11.1833 150.493 10.0982C151.332 9.01164 152.461 8.33071 153.88 8.33071C157.167 8.33071 157.428 11.3097 157.428 11.3097H159.93C159.93 10.4195 158.97 7.00098 153.739 7.00098C151.071 7.00098 149.481 7.91229 148.168 9.38698C146.849 10.8613 146.222 12.8705 146.222 15.0659C146.222 18.9076 149.412 22.3762 154.01 22.3773C155.838 22.3773 157.408 21.8982 158.288 21.4908C159.328 21.003 159.989 20.4447 160 19.77V14.5157L160 14.5168Z" fill="#53575A"/>
-      <path d="M96.888 7.32715L92.2473 18.5116L87.7357 7.32715H84.7403L87.312 13.809L85.3025 18.5116L80.7866 7.32715H77.7944L83.2993 21.1817C83.4575 21.5694 83.7901 22.3781 84.597 22.3781C85.2118 22.3781 85.5082 22.2554 86.0136 21.1645L88.1602 15.9452L90.2546 21.2101C90.4132 21.5993 90.7479 22.3781 91.5516 22.3781C92.1514 22.3781 92.5062 22.162 92.947 21.1966L98.6236 7.32715H96.888Z" fill="#53575A"/>
-      <path d="M144.516 7.35547H142.721V17.2211C141.731 15.9261 137.694 10.6466 136.214 8.71879C135.612 7.93636 135.092 7.35547 133.854 7.35547H131.717V22.0767H133.511V9.6323C133.511 9.6323 141.364 19.8715 142.048 20.8507C142.733 21.8255 143.261 22.3889 143.69 22.4032H143.712C143.889 22.4032 144.129 22.3619 144.299 22.1698C144.463 21.9789 144.513 21.7357 144.516 21.4111V7.35547Z" fill="#53575A"/>
-    </g>
-    <defs><clipPath id="ft"><rect width="160" height="28" fill="white"/></clipPath></defs>
-  </svg>
-</footer>
+  <!-- ══════════════════════════════════════
+       SLIDE 15 — /의사결정분석 호출 테스트
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s15">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">15 / 16</span>
+    </div>
+    <div class="slide-body" style="align-items:center; text-align:center;">
+      <p class="eyebrow">실습 3 · /의사결정분석 · ② 실행</p>
+      <h2 class="slide-title">이게 전부입니다</h2>
+      <p class="slide-subtitle" style="margin-bottom:32px;">Claude 채팅창에 아래 한 줄만 입력하세요.</p>
+      <div class="prompt-wrap" style="max-width:480px; margin:0 auto;">
+        <pre class="prompt-box" id="p3b" style="font-size:clamp(18px,2.3vw,28px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/의사결정분석</pre>
+        <button class="copy-btn" onclick="copyPrompt('p3b', this)">복사</button>
+      </div>
+      <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
+        <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
+        <ul>
+          <li>폴더의 <strong>의사결정안건.txt</strong> 파일을 찾아 읽기</li>
+          <li>선택지 분석 · 권고안 · 악마의 변호인 생성</li>
+          <li><strong>의사결정_분석.md</strong> 파일로 저장 — 왼쪽 탐색기에서 확인</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 16 — 오늘의 결과물
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s16">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">16 / 16</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">마무리</p>
+      <h2 class="slide-title">오늘 손에 남는 것</h2>
+      <div class="cards col2 mt16">
+        <div class="card" style="background:var(--white);">
+          <div class="card-label">취득 에이전트 2종</div>
+          <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/보고서요약</span>
+            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/의사결정분석</span>
+          </div>
+          <div class="card-desc" style="margin-top:16px; line-height:1.8;">
+            .txt 파일 자동 읽기 → 분석 → .md 저장<br>
+            이름만 불러도 알아서 파일 찾고 결과 저장
+          </div>
+        </div>
+        <div class="card" style="background:var(--white);">
+          <div class="card-label">내일부터 쓰는 법</div>
+          <div class="step-list" style="margin-top:12px; gap:10px;">
+            <div class="step-item">
+              <div class="step-num" style="width:26px;height:26px;font-size:12px;">1</div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">VSCode 열기</strong></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num" style="width:26px;height:26px;font-size:12px;">2</div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">my-agents 폴더 열기</strong></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num" style="width:26px;height:26px;font-size:12px;">3</div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">채팅창에 / 입력 → 에이전트 선택 → 실행</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hbox mt16" style="background:var(--white);">
+        <p>에이전트는 <strong>계속 추가할 수 있습니다.</strong> 오늘 배운 방식으로 원하는 역할의 캐릭터를 직접 만들어보세요.</p>
+      </div>
+      <!-- 추가할 내용이 있으면 여기에 작성하세요 -->
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAVIGATION -->
+<nav class="nav-bar">
+  <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="btn-next" onclick="go(1)">→</button>
+</nav>
+
+<div class="key-hint">
+  <span class="key">←</span><span class="key">→</span> 이동 &nbsp;·&nbsp; <span class="key">F</span> 전체화면
+</div>
 
 <script>
-  function switchOS(os) {
-    document.querySelectorAll('.os-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.os-tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('os-' + os).classList.add('active');
-    event.currentTarget.classList.add('active');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let cur = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur].classList.remove('prev'), 400);
+    cur = n;
+    slides[cur].classList.add('active');
+    updateUI();
+  }
+
+  function go(dir) { goTo(cur + dir); }
+
+  function updateUI() {
+    document.getElementById('btn-prev').disabled = cur === 0;
+    document.getElementById('btn-next').disabled = cur === total - 1;
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    const pct = total <= 1 ? 100 : (cur / (total - 1)) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  { e.preventDefault(); go(-1); }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    if ((e.key === 'A' || e.key === 'a') && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      document.querySelectorAll('.admin-panel').forEach(p => {
+        p.style.display = p.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+  });
+
+  function updateDownloadLink(num, url) {
+    const el = document.getElementById('dl-file' + num);
+    if (!el) return;
+    if (url && url.trim()) {
+      el.href = url.trim();
+      el.removeAttribute('download');
+    } else {
+      const defaults = { 1: '1분기실적보고서.txt', 2: '의사결정안건.txt' };
+      el.href = defaults[num];
+      el.setAttribute('download', defaults[num]);
+    }
+  }
+
+  updateUI();
+
+  function switchOS(os, btn) {
+    const parent = btn.closest('.slide-body');
+    parent.querySelectorAll('.os-content').forEach(el => el.classList.remove('active'));
+    parent.querySelectorAll('.os-tab-btn').forEach(el => el.classList.remove('active'));
+    parent.querySelector('#os-' + os).classList.add('active');
+    btn.classList.add('active');
   }
 
   function copyPrompt(id, btn) {
@@ -1181,25 +1446,18 @@
     navigator.clipboard.writeText(text.trim()).then(() => {
       btn.textContent = '✓ 복사됨';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '복사';
-        btn.classList.remove('copied');
-      }, 2000);
+      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
     }).catch(() => {
       const ta = document.createElement('textarea');
       ta.value = text.trim();
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
+      ta.style.cssText = 'position:fixed;opacity:0;';
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
       btn.textContent = '✓ 복사됨';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '복사';
-        btn.classList.remove('copied');
-      }, 2000);
+      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
     });
   }
 </script>
