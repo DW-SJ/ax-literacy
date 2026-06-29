@@ -444,28 +444,33 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: var(--white);
-    border: 1.5px solid var(--pastel-border);
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(241,138,0,0.15);
     border-radius: 40px;
     padding: 8px 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
     z-index: 200;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0.45;
+    transition: opacity 0.2s;
   }
+  .nav-bar:hover { opacity: 1; }
   .nav-btn {
-    width: 36px; height: 36px;
+    width: 32px; height: 32px;
     border-radius: 50%;
     border: none;
-    background: var(--pastel-bg);
-    color: var(--brand);
-    font-size: 16px;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 15px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s;
+    transition: color 0.15s;
     flex-shrink: 0;
   }
-  .nav-btn:hover { background: var(--pastel-light); }
+  .nav-btn:hover { color: var(--brand); }
   .nav-btn:disabled { opacity: 0.3; cursor: default; }
 
   .nav-dots {
@@ -685,7 +690,7 @@
   <div class="slide slide-title-hero active" id="s1">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">1 / 16</span>
+      <span class="slide-num">1 / 19</span>
     </div>
     <div class="slide-body">
       <div class="hero-accent"></div>
@@ -702,7 +707,7 @@
   <div class="slide" id="s2">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">2 / 16</span>
+      <span class="slide-num">2 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">오늘의 일정</p>
@@ -731,8 +736,8 @@
           <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
           <div class="tl-content">
             <span class="tl-tag">실습 2</span>
-            <strong>사장단 회의 준비 에이전트 구축</strong>
-            <span><span class="cmd">/보고서요약</span> — 파일 자동 읽기 · 요약 저장</span>
+            <strong>보고서 분석 에이전트 구축</strong>
+            <span><span class="cmd">/보고분석</span> — 자율 판단 · 숨겨진 리스크 탐지</span>
           </div>
         </div>
         <div class="tl-item">
@@ -740,13 +745,22 @@
           <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
           <div class="tl-content">
             <span class="tl-tag">실습 3</span>
-            <strong>경영 의사결정 지원 에이전트 구축</strong>
-            <span><span class="cmd">/의사결정분석</span> — 파일 자동 읽기 · 분석 저장</span>
+            <strong>의사결정 미팅 시뮬레이터 구축</strong>
+            <span><span class="cmd">/의사결정분석</span> — 추진·비판·현실 3인 동시 분석</span>
           </div>
         </div>
         <div class="tl-item">
           <div class="tl-left">01:35</div>
           <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+          <div class="tl-content">
+            <span class="tl-tag">실습 4</span>
+            <strong>시장 브리핑 에이전트 구축</strong>
+            <span><span class="cmd">/시장브리핑</span> — 인터넷 실시간 수집 · 4인 병렬</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">01:55</div>
+          <div class="tl-line"><div class="tl-dot"></div></div>
           <div class="tl-content">
             <span class="tl-tag gray">마무리</span>
             <strong>정리 & Q&A</strong>
@@ -760,36 +774,179 @@
   <!-- ══════════════════════════════════════
        SLIDE 3 — 에이전트란?
   ══════════════════════════════════════ -->
-  <div class="slide bg-alt" id="s3">
-    <div class="slide-header" style="background:var(--pastel-bg);">
+  <div class="slide" id="s3">
+    <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">3 / 16</span>
+      <span class="slide-num">3 / 19</span>
     </div>
-    <div class="slide-body">
-      <p class="eyebrow">핵심 개념</p>
-      <h2 class="slide-title">에이전트 = <span>캐릭터</span></h2>
-      <p class="slide-subtitle">프롬프트를 매번 다시 쓰는 게 아닙니다.<br>역할을 <strong>한 번</strong> 정의해두면, 이름만 불러서 일을 시킵니다.</p>
-      <div class="compare">
-        <div class="compare-box before">
-          <div class="compare-label">기존 방식</div>
-          <ul class="compare-list">
-            <li>새 대화 시작</li>
-            <li>역할 설명 다시 입력</li>
-            <li>프롬프트 붙여넣기</li>
-            <li>결과 확인 → 끝</li>
-          </ul>
+    <div class="slide-body" style="padding:16px 60px 12px; justify-content:flex-start; gap:0;">
+
+      <!-- 탭 버튼 -->
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button id="s3btn-chat" onclick="showTab3('chat')"
+          style="display:flex; align-items:center; gap:6px; padding:8px 20px; border-radius:8px; border:2px solid var(--brand); background:var(--brand); font-size:13px; font-weight:700; color:#fff; cursor:pointer;">
+          💬 챗봇
+        </button>
+        <button id="s3btn-agent" onclick="showTab3('agent')"
+          style="display:flex; align-items:center; gap:6px; padding:8px 20px; border-radius:8px; border:1.5px solid #E0DDD9; background:#F5F5F4; font-size:13px; font-weight:700; color:var(--text-2); cursor:pointer;">
+          🤖 에이전트
+        </button>
+        <button id="s3btn-multi" onclick="showTab3('multi')"
+          style="display:flex; align-items:center; gap:6px; padding:8px 20px; border-radius:8px; border:1.5px solid #E0DDD9; background:#F5F5F4; font-size:13px; font-weight:700; color:var(--text-2); cursor:pointer;">
+          🤝 멀티 에이전트
+        </button>
+      </div>
+
+      <!-- 탭 패널 -->
+      <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+
+        <!-- 챗봇 탭 -->
+        <div id="s3tab-chat" style="display:flex; flex-direction:row; width:100%; gap:32px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-size:12px; font-weight:800; color:var(--brand); letter-spacing:0.12em; margin-bottom:10px;">PHASE 1</div>
+            <div style="font-size:clamp(22px,2.5vw,30px); font-weight:800; color:var(--text); margin-bottom:16px; line-height:1.2;">질문하면 답합니다</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:flex-start; gap:8px; font-size:15px; color:var(--text-2);">
+                <span style="color:#E07070; font-weight:700; flex-shrink:0;">✕</span> 매번 직접 물어봐야 함
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:8px; font-size:15px; color:var(--text-2);">
+                <span style="color:#E07070; font-weight:700; flex-shrink:0;">✕</span> 파일을 스스로 찾지 않음
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:8px; font-size:15px; color:var(--text-2);">
+                <span style="color:#E07070; font-weight:700; flex-shrink:0;">✕</span> 한 번에 한 가지만 답함
+              </div>
+            </div>
+          </div>
+          <div style="flex:1.3; background:#F9F8F6; border:1.5px solid #E8E5E0; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; justify-content:flex-end;">
+              <div style="background:var(--brand); color:#fff; border-radius:12px 12px 2px 12px; padding:8px 14px; font-size:14px; max-width:75%;">2분기 실적 어떻게 됩니까?</div>
+            </div>
+            <div style="display:flex; justify-content:flex-start;">
+              <div style="background:#fff; border:1px solid #E8E5E0; border-radius:12px 12px 12px 2px; padding:8px 14px; font-size:14px; max-width:75%; color:var(--text-2);">2분기 매출은 3,412억원으로 전년 동기 대비 8.3% 증가했습니다.</div>
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+              <div style="background:var(--brand); color:#fff; border-radius:12px 12px 2px 12px; padding:8px 14px; font-size:14px; max-width:75%;">그럼 영업이익은요?</div>
+            </div>
+            <div style="display:flex; justify-content:flex-start;">
+              <div style="background:#fff; border:1px solid #E8E5E0; border-radius:12px 12px 12px 2px; padding:8px 14px; font-size:14px; max-width:75%; color:var(--text-2);">영업이익은 271억으로 전년 대비 2.1% 감소했습니다.</div>
+            </div>
+          </div>
         </div>
-        <div class="compare-arrow">→</div>
-        <div class="compare-box after">
-          <div class="compare-label">에이전트 방식</div>
-          <ul class="compare-list">
-            <li>캐릭터 파일 한 번 정의</li>
-            <li>파일을 폴더에 넣기</li>
-            <li><span class="cmd">/보고서요약</span> 입력</li>
-            <li>결과 파일이 자동 저장 — 오늘도, 내일도</li>
-          </ul>
+
+        <!-- 에이전트 탭 -->
+        <div id="s3tab-agent" style="display:none; width:100%; gap:32px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-size:12px; font-weight:800; color:var(--brand); letter-spacing:0.12em; margin-bottom:10px;">PHASE 2</div>
+            <div style="font-size:clamp(22px,2.5vw,30px); font-weight:800; color:var(--text); margin-bottom:16px; line-height:1.2;">한 번 지시하면<br>알아서 처리</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:flex-start; gap:8px; font-size:15px; color:var(--text-2);">
+                <span style="color:#4CAF50; font-weight:700; flex-shrink:0;">✓</span> 파일을 직접 찾아 읽음
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:8px; font-size:15px; color:var(--text-2);">
+                <span style="color:#4CAF50; font-weight:700; flex-shrink:0;">✓</span> 전문가 에이전트 동시 실행
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:8px; font-size:15px; color:var(--text-2);">
+                <span style="color:#4CAF50; font-weight:700; flex-shrink:0;">✓</span> 결과 통합 · HTML 저장까지
+              </div>
+            </div>
+          </div>
+          <div style="flex:1.3; background:#F9F8F6; border:1.5px solid #E8E5E0; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:10px;">
+            <div style="background:var(--brand); color:#fff; border-radius:8px; padding:8px 14px; font-size:14px; font-weight:600; text-align:center;">/보고분석</div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-3); text-align:center; letter-spacing:0.08em;">↓ 파일 읽기 후 동시 실행</div>
+            <div style="display:flex; gap:6px;">
+              <div style="flex:1; background:#fff; border:1.5px solid #4CAF50; border-radius:8px; padding:10px 6px; font-size:13px; color:#166534; font-weight:700; text-align:center; line-height:1.5;">🔍<br>이슈<br>분석가</div>
+              <div style="flex:1; background:#fff; border:1.5px solid #F59E0B; border-radius:8px; padding:10px 6px; font-size:13px; color:#92400E; font-weight:700; text-align:center; line-height:1.5;">⚠️<br>리스크<br>탐지자</div>
+              <div style="flex:1; background:#fff; border:1.5px solid #3B82F6; border-radius:8px; padding:10px 6px; font-size:13px; color:#1E40AF; font-weight:700; text-align:center; line-height:1.5;">❓<br>경영<br>자문가</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; background:var(--pastel-bg); border:1.5px solid var(--brand); border-radius:8px; padding:8px 12px; font-size:13px; color:var(--brand); font-weight:700;">
+              <span style="font-size:14px;">✓</span> 결과 통합 → 보고분석_결과.html 저장
+            </div>
+          </div>
+        </div>
+
+        <!-- 멀티에이전트 탭 -->
+        <div id="s3tab-multi" style="display:none; flex-direction:column; align-items:center; gap:0; width:100%;">
+
+          <!-- 설명 -->
+          <div style="display:flex; gap:24px; width:100%; max-width:760px; margin-bottom:36px;">
+            <div style="flex:1; background:var(--pastel-bg); border:1.5px solid var(--brand); border-radius:10px; padding:14px 18px;">
+              <div style="font-size:12px; font-weight:800; color:var(--brand); letter-spacing:0.12em; margin-bottom:6px;">PHASE 3 · 지금</div>
+              <div style="font-size:16px; font-weight:800; color:var(--text); margin-bottom:8px;">팀처럼 동시에 처리</div>
+              <div style="font-size:13px; color:var(--text-2); line-height:1.6;">여러 에이전트가 <strong>각자 맡은 역할</strong>을 동시에 수행합니다. 한 명이 리서치하는 동안 다른 한 명이 보고서를 작성합니다.</div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-2);">
+                <span style="color:#4CAF50; font-weight:700;">✓</span> 역할별 전문화 — 각자 잘하는 것만
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-2);">
+                <span style="color:#4CAF50; font-weight:700;">✓</span> 병렬 처리 — 동시에 여러 작업
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-2);">
+                <span style="color:#4CAF50; font-weight:700;">✓</span> 확장 가능 — 역할 추가로 팀 성장
+              </div>
+            </div>
+          </div>
+
+          <!-- Head Agent -->
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <img src="claudecode-color.svg" width="76" height="76" style="border-radius:20px; box-shadow:0 10px 32px rgba(241,138,0,0.3),0 2px 8px rgba(0,0,0,0.1);">
+            <div style="text-align:center;">
+              <div style="font-size:10px; font-weight:800; color:var(--brand); letter-spacing:0.06em;">HEAD AGENT</div>
+              <div style="font-size:clamp(13px,1.3vw,15px); font-weight:700; color:var(--text);">총괄 조율자</div>
+            </div>
+          </div>
+
+          <!-- Connector lines -->
+          <div style="width:100%; max-width:700px; height:44px;">
+            <svg width="100%" height="44" viewBox="0 0 700 44" preserveAspectRatio="none">
+              <line x1="350" y1="0" x2="350" y2="22" stroke="#FFD4A0" stroke-width="2"/>
+              <line x1="87" y1="22" x2="613" y2="22" stroke="#FFD4A0" stroke-width="2"/>
+              <line x1="87" y1="22" x2="87" y2="44" stroke="#FFD4A0" stroke-width="2"/>
+              <line x1="262" y1="22" x2="262" y2="44" stroke="#FFD4A0" stroke-width="2"/>
+              <line x1="438" y1="22" x2="438" y2="44" stroke="#FFD4A0" stroke-width="2"/>
+              <line x1="613" y1="22" x2="613" y2="44" stroke="#FFD4A0" stroke-width="2"/>
+            </svg>
+          </div>
+
+          <!-- Sub Agents Row -->
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; width:100%; max-width:760px;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <img src="claudecode-color.svg" width="60" height="60" style="border-radius:16px; box-shadow:0 6px 20px rgba(241,138,0,0.25),0 2px 6px rgba(0,0,0,0.08);">
+              <div style="text-align:center;">
+                <div style="font-size:10px; font-weight:700; color:var(--text-3); letter-spacing:0.06em; margin-bottom:2px;">SUB AGENT 1</div>
+                <div style="font-size:clamp(12px,1.2vw,14px); font-weight:700; color:var(--text);">리서치 담당</div>
+                <div style="font-size:11px; color:var(--text-3); margin-top:2px;">시장 · 트렌드 조사</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <img src="claudecode-color.svg" width="60" height="60" style="border-radius:16px; box-shadow:0 6px 20px rgba(241,138,0,0.25),0 2px 6px rgba(0,0,0,0.08);">
+              <div style="text-align:center;">
+                <div style="font-size:10px; font-weight:700; color:var(--text-3); letter-spacing:0.06em; margin-bottom:2px;">SUB AGENT 2</div>
+                <div style="font-size:clamp(12px,1.2vw,14px); font-weight:700; color:var(--text);">보고서 작성</div>
+                <div style="font-size:11px; color:var(--text-3); margin-top:2px;">데이터 → 문서화</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <img src="claudecode-color.svg" width="60" height="60" style="border-radius:16px; box-shadow:0 6px 20px rgba(241,138,0,0.25),0 2px 6px rgba(0,0,0,0.08);">
+              <div style="text-align:center;">
+                <div style="font-size:10px; font-weight:700; color:var(--text-3); letter-spacing:0.06em; margin-bottom:2px;">SUB AGENT 3</div>
+                <div style="font-size:clamp(12px,1.2vw,14px); font-weight:700; color:var(--text);">이메일 관리</div>
+                <div style="font-size:11px; color:var(--text-3); margin-top:2px;">회신 · 발송 처리</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <img src="claudecode-color.svg" width="60" height="60" style="border-radius:16px; box-shadow:0 6px 20px rgba(241,138,0,0.25),0 2px 6px rgba(0,0,0,0.08);">
+              <div style="text-align:center;">
+                <div style="font-size:10px; font-weight:700; color:var(--text-3); letter-spacing:0.06em; margin-bottom:2px;">SUB AGENT 4</div>
+                <div style="font-size:clamp(12px,1.2vw,14px); font-weight:700; color:var(--text);">일정 조율</div>
+                <div style="font-size:11px; color:var(--text-3); margin-top:2px;">회의 · 스케줄 관리</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+
     </div>
   </div>
 
@@ -799,12 +956,12 @@
   <div class="slide scrollable" id="s4">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">4 / 16</span>
+      <span class="slide-num">4 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">Step 1 · 환경 준비</p>
       <h2 class="slide-title">VSCode 설치하기</h2>
-      <p class="slide-subtitle" style="margin-bottom:16px;">VSCode는 오늘 <strong>Claude와 대화하는 공간</strong>으로 사용합니다. Node.js 설치는 필요 없습니다.</p>
+      <p class="slide-subtitle" style="margin-bottom:16px;">VSCode는 오늘 <strong>Claude와 대화하는 공간</strong>으로 사용합니다.</p>
       <div class="os-tabs" role="tablist">
         <button class="os-tab-btn active" onclick="switchOS('win', this)" role="tab">🪟 Windows</button>
         <button class="os-tab-btn" onclick="switchOS('mac', this)" role="tab">🍎 Mac</button>
@@ -813,7 +970,7 @@
         <div class="step-list" style="margin-top:0;">
           <div class="step-item">
             <div class="step-num">1</div>
-            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span>브라우저에서 <strong>code.visualstudio.com</strong> 입력 → Enter</span></div>
+            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span><a href="https://code.visualstudio.com" target="_blank" style="color:var(--brand); font-weight:700;">code.visualstudio.com</a> 클릭</span></div>
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
@@ -833,7 +990,7 @@
         <div class="step-list" style="margin-top:0;">
           <div class="step-item">
             <div class="step-num">1</div>
-            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span>Safari/Chrome에서 <strong>code.visualstudio.com</strong> 입력</span></div>
+            <div class="step-text"><strong>VSCode 홈페이지 접속</strong><span><a href="https://code.visualstudio.com" target="_blank" style="color:var(--brand); font-weight:700;">code.visualstudio.com</a> 클릭</span></div>
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
@@ -855,36 +1012,29 @@
   <!-- ══════════════════════════════════════
        SLIDE 5 — 환경: VSCode 익히기
   ══════════════════════════════════════ -->
-  <div class="slide" id="s5">
+  <div class="slide scrollable" id="s5">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">5 / 16</span>
+      <span class="slide-num">5 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">Step 2 · 환경 준비</p>
       <h2 class="slide-title">VSCode 기본 화면</h2>
-      <p class="slide-subtitle" style="margin-bottom:20px;">오늘 쓸 부분은 딱 하나. 왼쪽 사이드바의 <strong style="color:var(--brand)">Claude 아이콘</strong>만 기억하면 됩니다.</p>
+      <p class="slide-subtitle" style="margin-bottom:20px;">구역 3개만 기억하면 됩니다. 가장 많이 쓸 공간은 <strong style="color:var(--brand)">오른쪽 채팅창</strong>입니다.</p>
       <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:32px; align-items:center;">
-        <!-- ★ 스크린샷 교체: 같은 폴더에 screenshot-s5.png 로 저장 후 아래 img 태그 사용 -->
-        <!-- <img src="screenshot-s5.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);"> -->
-        <div style="border:2px dashed var(--pastel-border); border-radius:12px; background:var(--pastel-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:240px; gap:10px; color:var(--text-3);">
-          <span style="font-size:36px;">📷</span>
-          <span style="font-weight:700; font-size:15px; color:var(--text-2);">VSCode 전체 화면 캡쳐</span>
-          <span style="font-size:12px; font-family:monospace; background:#EEE; padding:3px 10px; border-radius:4px; color:var(--text-3);">screenshot-s5.png</span>
-          <span style="font-size:11px; color:var(--text-3);">같은 폴더에 저장 후 위 주석 교체</span>
-        </div>
+        <img src="screenshot-s5.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);">
         <div class="step-list" style="margin-top:0;">
           <div class="step-item">
             <div class="step-num">A</div>
-            <div class="step-text"><strong>사이드바 (왼쪽)</strong><span>Claude, 파일탐색기 등 아이콘. 오늘은 Claude 아이콘만 사용합니다.</span></div>
+            <div class="step-text"><strong>왼쪽 사이드바</strong><span>폴더와 파일 목록. Claude가 만든 파일이 여기에 쌓입니다.</span></div>
           </div>
           <div class="step-item">
             <div class="step-num">B</div>
-            <div class="step-text"><strong>편집창 (중앙)</strong><span>Claude가 파일을 만들거나 코드를 생성하면 여기 나타납니다.</span></div>
+            <div class="step-text"><strong>편집창 (중앙)</strong><span>Claude가 파일을 만들거나 내용을 수정하면 여기 나타납니다.</span></div>
           </div>
           <div class="step-item">
             <div class="step-num">C</div>
-            <div class="step-text"><strong>터미널 (아래)</strong><span>Claude가 명령을 실행할 때 사용. 직접 건드릴 필요 없습니다.</span></div>
+            <div class="step-text"><strong>오른쪽 사이드바</strong><span>Claude와 채팅하는 공간. 오늘 모든 대화는 여기서 합니다.</span></div>
           </div>
         </div>
       </div>
@@ -894,10 +1044,10 @@
   <!-- ══════════════════════════════════════
        SLIDE 6 — 환경: Claude Code 연결
   ══════════════════════════════════════ -->
-  <div class="slide" id="s6">
+  <div class="slide scrollable" id="s6">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">6 / 16</span>
+      <span class="slide-num">6 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">Step 3 · 환경 준비</p>
@@ -912,7 +1062,7 @@
             </div>
             <div class="step-item">
               <div class="step-num">2</div>
-              <div class="step-text"><strong>Claude Code 검색 → 설치</strong><span>"Claude Code" 검색 → 발행자 <strong>Anthropic</strong> 선택 → Install</span></div>
+              <div class="step-text"><strong>Claude Code 검색 → 설치</strong><span>"Claude Code" 검색 후 선택 → Install</span></div>
             </div>
             <div class="step-item">
               <div class="step-num">3</div>
@@ -920,18 +1070,11 @@
             </div>
             <div class="step-item">
               <div class="step-num">4</div>
-              <div class="step-text"><strong>첫 대화 테스트</strong><span>채팅창에 <strong>"안녕하세요"</strong> → Claude 답하면 완료!</span></div>
+              <div class="step-text"><strong>첫 대화 테스트</strong><span>프롬프트창에 <strong>"안녕하세요"</strong> → Claude가 답하면 세팅 완료!</span></div>
             </div>
           </div>
         </div>
-        <!-- ★ 스크린샷 교체: 같은 폴더에 screenshot-s6.png 로 저장 후 아래 img 태그 사용 -->
-        <!-- <img src="screenshot-s6.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);"> -->
-        <div style="border:2px dashed var(--pastel-border); border-radius:12px; background:var(--pastel-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:260px; gap:10px;">
-          <span style="font-size:36px;">📷</span>
-          <span style="font-weight:700; font-size:15px; color:var(--text-2);">Claude Code 설치 화면 캡쳐</span>
-          <span style="font-size:12px; font-family:monospace; background:#EEE; padding:3px 10px; border-radius:4px; color:var(--text-3);">screenshot-s6.png</span>
-          <span style="font-size:11px; color:var(--text-3);">같은 폴더에 저장 후 위 주석 교체</span>
-        </div>
+        <img src="screenshot-s6.png" style="width:100%; border-radius:10px; border:1.5px solid var(--line);">
       </div>
     </div>
   </div>
@@ -942,7 +1085,7 @@
   <div class="slide bg-alt" id="s7">
     <div class="slide-header" style="background:var(--pastel-bg);">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">7 / 16</span>
+      <span class="slide-num">7 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">실습 1 · 바이브코딩 · ★☆☆</p>
@@ -977,7 +1120,7 @@
   <div class="slide scrollable" id="s8">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">8 / 16</span>
+      <span class="slide-num">8 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">실습 1 · 바이브코딩 · 프롬프트</p>
@@ -1047,22 +1190,22 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       SLIDE 9 — 커맨드 파일 구조
+       SLIDE 9 — 에이전트 = 캐릭터 만들기
   ══════════════════════════════════════ -->
   <div class="slide" id="s9">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">9 / 16</span>
+      <span class="slide-num">9 / 19</span>
     </div>
     <div class="slide-body" style="flex-direction:row; gap:60px; align-items:center;">
       <div style="flex:1;">
-        <p class="eyebrow">에이전트 구조</p>
-        <h2 class="slide-title">커맨드 파일 =<br><span>캐릭터 카드</span></h2>
-        <p class="slide-subtitle" style="margin-bottom:20px;">파일 안에 역할·성격·출력 형식을 정의합니다.<br>정의가 끝나면 슬래시(/) 하나로 호출합니다.</p>
+        <p class="eyebrow">에이전트란?</p>
+        <h2 class="slide-title">에이전트 만들기 =<br><span>캐릭터 만들기</span></h2>
+        <p class="slide-subtitle" style="margin-bottom:20px;">이름·역할·성격을 글로 한 번 정의하면<br>그대로 움직이는 나만의 AI 직원이 됩니다.<br>슬래시(/) 하나로 언제든 부를 수 있어요.</p>
         <ul class="output-list">
-          <li><span class="oi">📄</span><div>파일을 한 번 만들면 <strong>영구적으로 재사용</strong></div></li>
-          <li><span class="oi">✏️</span><div>마음에 안 들면 파일만 수정하면 됨</div></li>
-          <li><span class="oi">➕</span><div>에이전트는 원하는 만큼 계속 추가 가능</div></li>
+          <li><span class="oi">🎭</span><div>역할과 성격을 <strong>한 번만 정의</strong>하면 완성</div></li>
+          <li><span class="oi">✏️</span><div>마음에 안 들면 설명만 고치면 됨</div></li>
+          <li><span class="oi">➕</span><div>필요한 캐릭터는 원하는 만큼 추가 가능</div></li>
         </ul>
       </div>
       <div style="flex:1;">
@@ -1070,15 +1213,15 @@
           <span class="ft-folder">📁 my-agents/</span><br>
           &nbsp;&nbsp;<span class="ft-folder">📁 .claude/</span><br>
           &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-folder">📁 commands/</span><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 보고서요약.md</span>
-          &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/보고서요약</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 보고분석.md</span>
+          &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/보고분석</span><br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">📄 의사결정분석.md</span>
           &nbsp;&nbsp;<span class="ft-arrow">→</span> <span class="ft-cmd">/의사결정분석</span>
         </div>
         <div class="hbox" style="margin-top:16px; background:var(--green-bg); border-left-color:var(--green);">
           <p style="color:var(--green); font-weight:700; font-size:clamp(13px,1.4vw,16px);">
-            VSCode에서 채팅창에 <strong>/</strong> 만 입력하면<br>
-            내가 만든 에이전트 목록이 바로 뜹니다
+            VSCode 채팅창에 <strong>/</strong> 만 입력하면<br>
+            내가 만든 캐릭터 목록이 바로 뜹니다
           </p>
         </div>
       </div>
@@ -1091,36 +1234,44 @@
   <div class="slide bg-alt" id="s10">
     <div class="slide-header" style="background:var(--pastel-bg);">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">10 / 16</span>
+      <span class="slide-num">10 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">실습 2 · 에이전트 구축 · ★★☆</p>
-      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/보고서요약</span> 에이전트</h2>
-      <p class="slide-subtitle" style="margin-bottom:20px;"><strong>파일을 폴더에 넣기만 하면</strong> 에이전트가 스스로 읽고, 분석하고, 결과 파일까지 저장합니다.</p>
-      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; align-items:center; gap:0; margin-top:8px;">
+      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/보고분석</span> 에이전트</h2>
+      <p class="slide-subtitle" style="margin-bottom:16px;">보고서 파일 하나만 넣으면, <strong>AI가 직접 읽고 중요한 내용을 골라서</strong> 정리해줍니다.</p>
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; align-items:center; gap:0; margin-top:4px;">
         <div class="card" style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;">
           <span style="font-size:28px;">📄</span>
           <div class="card-title">1분기실적보고서.txt</div>
           <a id="dl-file1" href="1분기실적보고서.txt" download="1분기실적보고서.txt"
-             style="display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(11px,1.1vw,13px); padding:7px 14px; border-radius:7px; text-decoration:none;">
+             onclick="event.preventDefault(); downloadEmbed(1)"
+             style="display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(11px,1.1vw,13px); padding:7px 14px; border-radius:7px; text-decoration:none; cursor:pointer;">
             ⬇ 다운로드
           </a>
         </div>
         <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
         <div class="card" style="text-align:center; background:var(--green-bg); border-color:var(--green-border);">
           <span style="font-size:28px;">🤖</span>
-          <div class="card-title" style="margin-top:8px; color:var(--green);">/보고서요약</div>
-          <div class="card-desc">파일 자동 읽기 · 분석</div>
+          <div class="card-title" style="margin-top:6px; color:var(--green);">/보고분석</div>
+          <div class="card-desc" style="font-size:clamp(11px,1.1vw,13px);">전문가 3인<br>동시 분석</div>
         </div>
         <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
         <div class="card" style="text-align:center;">
-          <span style="font-size:28px;">📝</span>
-          <div class="card-title" style="margin-top:8px;">회의준비_요약.html</div>
-          <div class="card-desc">PDF로 저장 가능한 결과물</div>
+          <span style="font-size:28px;">📊</span>
+          <div class="card-title" style="margin-top:6px;">보고분석_결과.html</div>
+          <div class="card-desc" style="font-size:clamp(11px,1.1vw,13px);">브라우저 자동 열림<br>Cmd+P → PDF 저장</div>
         </div>
       </div>
-      <div class="hbox" style="margin-top:12px;">
-        <p>파일 다운로드 → VSCode 폴더에 넣기 → <strong>/보고서요약</strong> 입력 → 나머지는 에이전트가 알아서</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;">
+        <div style="background:#FEF3F2; border:1.5px solid #FCA5A5; border-radius:10px; padding:12px 16px;">
+          <div style="font-size:11px; font-weight:800; color:#DC2626; letter-spacing:0.08em; margin-bottom:6px;">🔴 AI가 알아서 해주는 것</div>
+          <div style="font-size:clamp(12px,1.2vw,14px); color:var(--text-2); line-height:1.7;">보고서에서 빠진 중요 내용 찾기<br>지금 당장 봐야 할 이슈 정리<br>보고자가 빠뜨린 내용 짚어주기</div>
+        </div>
+        <div style="background:var(--green-bg); border:1.5px solid var(--green-border); border-radius:10px; padding:12px 16px;">
+          <div style="font-size:11px; font-weight:800; color:var(--green); letter-spacing:0.08em; margin-bottom:6px;">✅ 내가 하는 것</div>
+          <div style="font-size:clamp(12px,1.2vw,14px); color:var(--text-2); line-height:1.7;">파일 폴더에 넣기<br><span class="cmd" style="font-size:0.9em;">/보고분석</span> 입력<br>결과 확인</div>
+        </div>
       </div>
       <div class="admin-panel" style="display:none; margin-top:10px; border:1.5px dashed var(--pastel-border); border-radius:8px; padding:12px 16px; background:var(--pastel-bg);">
         <p style="font-size:11px; font-weight:800; letter-spacing:0.08em; color:var(--brand); margin-bottom:8px;">🔧 강사용 — 파일 링크 교체</p>
@@ -1138,44 +1289,35 @@
   <div class="slide scrollable" id="s11">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">11 / 16</span>
+      <span class="slide-num">11 / 19</span>
     </div>
     <div class="slide-body">
-      <p class="eyebrow">실습 2 · /보고서요약 · ① 에이전트 생성</p>
+      <p class="eyebrow">실습 2 · /보고분석 · ① 에이전트 생성</p>
       <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
-      <div class="context-note">이 프롬프트를 Claude에게 주면, 파일을 읽고 결과를 저장하는 <strong>자율 실행 에이전트</strong>가 만들어집니다.</div>
+      <div class="context-note">이 프롬프트 한 번으로 <strong>전문가 3인 동시 실행 오케스트레이터</strong>가 만들어집니다. 에이전트들이 각자 맡은 분석을 병렬로 수행합니다.</div>
       <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
       <div class="prompt-wrap">
-        <pre class="prompt-box" id="p2a"><span class="comment"># 에이전트 생성 요청 — 파일 자동 읽기 + 결과 저장형</span>
+        <pre class="prompt-box" id="p2a"><span class="comment"># 에이전트 만들기</span>
 
-.claude/commands/ 폴더 안에 <span class="highlight">보고서요약.md</span> 파일을 만들어줘.
+.claude/commands/ 폴더 안에 <span class="highlight">보고분석.md</span> 파일을 만들어줘.
 
-이 파일은 내가 /보고서요약 커맨드로 부를 에이전트야.
-이 에이전트의 역할: <span class="highlight">사장단 회의 준비 전문가</span>
+이 파일은 내가 /보고분석 커맨드로 부를 <span class="highlight">에이전트</span>야.
+이 에이전트의 역할: <span class="highlight">보고서를 읽고, Agent 툴로 전문가 3명을 동시에 실행해 결과를 종합하는 오케스트레이터</span>
 
-호출되면 반드시 이 순서대로 실행해:
+호출되면 이 순서대로 실행해:
 1. 현재 폴더에서 <span class="highlight">.txt 파일을 찾아서 내용을 읽어</span>
-2. 아래 형식으로 분석해:
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📌 핵심 요약 — 3줄
-❓ 사장이 반드시 물어봐야 할 질문 5가지
-⚠️ 리스크 및 우려사항
-💡 추가 확인이 필요한 사항
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-3. 분석 결과를 <span class="highlight">인쇄 가능한 HTML 형식</span>으로 만들어:
-   - 파일명: <span class="highlight">'회의준비_요약.html'</span>
-   - 깔끔한 레이아웃, 섹션별 구분선, @media print 스타일 포함
-   - 파일 저장 후 브라우저에서 바로 열어줘
-   (열린 브라우저에서 Cmd+P → PDF로 저장 가능)</pre>
+2. <span class="highlight">Agent 툴로 전문가 3명을 동시에 실행해</span> (각자에게 파일 내용을 전달):
+   - 전문가 1 (즉시대응 분석가): 지금 당장 대응할 이슈 2가지 찾기
+   - 전문가 2 (리스크 탐지자): 보고서에 없는 숨겨진 리스크 3가지 찾기
+   - 전문가 3 (경영 자문가): CEO 질문 5개 + 말하지 않은 것 정리
+3. 세 결과를 통합해서 <span class="highlight">보고분석_결과.html</span>로 저장하고 브라우저에서 열어줘</pre>
         <button class="copy-btn" onclick="copyPrompt('p2a', this)">복사</button>
       </div>
       <div class="result-box">
         <div class="result-title">⚙️ 파일이 만들어지면</div>
         <ul>
-          <li>탐색기에 <strong>.claude/commands/보고서요약.md</strong> 파일 생성 확인</li>
-          <li>이제 다음 슬라이드에서 <strong>/보고서요약</strong> 한 줄만 입력하면 됩니다</li>
+          <li>탐색기에 <strong>.claude/commands/보고분석.md</strong> 파일 생성 확인</li>
+          <li>이제 다음 슬라이드에서 <strong>/보고분석</strong> 한 줄만 입력하면 됩니다</li>
         </ul>
       </div>
     </div>
@@ -1187,22 +1329,22 @@
   <div class="slide bg-alt" id="s12">
     <div class="slide-header" style="background:var(--pastel-bg);">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">12 / 16</span>
+      <span class="slide-num">12 / 19</span>
     </div>
     <div class="slide-body" style="align-items:center; text-align:center;">
-      <p class="eyebrow">실습 2 · /보고서요약 · ② 실행</p>
+      <p class="eyebrow">실습 2 · /보고분석 · ② 실행</p>
       <h2 class="slide-title">이게 전부입니다</h2>
       <p class="slide-subtitle" style="margin-bottom:32px;">Claude 채팅창에 아래 한 줄만 입력하세요.</p>
       <div class="prompt-wrap" style="max-width:400px; margin:0 auto;">
-        <pre class="prompt-box" id="p2b" style="font-size:clamp(20px,2.5vw,32px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/보고서요약</pre>
+        <pre class="prompt-box" id="p2b" style="font-size:clamp(20px,2.5vw,32px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/보고분석</pre>
         <button class="copy-btn" onclick="copyPrompt('p2b', this)">복사</button>
       </div>
       <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
         <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
         <ul>
-          <li>폴더의 <strong>1분기실적보고서.txt</strong> 파일을 찾아 읽기</li>
-          <li>핵심 요약 · 질문 · 리스크 분석</li>
-          <li><strong>회의준비_요약.html</strong> 생성 → 브라우저에서 자동으로 열림</li>
+          <li>폴더의 <strong>1분기실적보고서.txt</strong> 파일을 스스로 찾아 읽기</li>
+          <li>지금 바로 확인할 것 · 놓친 리스크 · 빠진 내용 자동 정리</li>
+          <li><strong>보고분석_결과.html</strong> 생성 → 브라우저에서 자동으로 열림</li>
           <li>브라우저에서 <kbd style="background:#F2F2F0;border:1px solid #DDD;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px;">Cmd+P</kbd> → <strong>PDF로 저장</strong></li>
         </ul>
       </div>
@@ -1212,57 +1354,85 @@
   <!-- ══════════════════════════════════════
        SLIDE 13 — 실습 3: /의사결정분석 소개
   ══════════════════════════════════════ -->
-  <div class="slide scrollable" id="s13">
+  <div class="slide" id="s13">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">13 / 16</span>
+      <span class="slide-num">13 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">실습 3 · 에이전트 구축 · ★★☆</p>
-      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/의사결정분석</span> 에이전트</h2>
-      <p class="slide-subtitle" style="margin-bottom:20px;"><strong>의사결정안건.txt</strong>를 넣으면 선택지 분석 + 악마의 변호인 + 실행계획이 담긴 <strong>의사결정_분석.html</strong>이 자동 생성되어 브라우저에서 열립니다.</p>
-      <div class="cards col3 mt16">
-        <div class="card">
-          <span class="card-icon">📊</span>
-          <div class="card-title">선택지 분석</div>
-          <div class="card-desc">각 대안의 장단점 · 판단 기준 · 권고안</div>
-        </div>
-        <div class="card" style="background:var(--pastel-bg); border-color:var(--brand);">
-          <span class="card-icon">😈</span>
-          <div class="card-title" style="color:var(--brand);">악마의 변호인</div>
-          <div class="card-desc">권고안의 가장 큰 약점 3가지를 <strong>자동으로</strong> 함께 제공</div>
-        </div>
-        <div class="card">
-          <span class="card-icon">📋</span>
-          <div class="card-title">실행 계획</div>
-          <div class="card-desc">결정 후 첫 3가지 액션까지 제시</div>
-        </div>
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; align-items:center; gap:0; margin-top:12px;">
-        <div class="card" style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;">
-          <span style="font-size:28px;">📄</span>
-          <div class="card-title">의사결정안건.txt</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:8px;">
+        <h2 class="slide-title" style="margin-bottom:0;"><span class="cmd" style="font-size:0.8em;">/의사결정분석</span> 에이전트</h2>
+        <div style="flex-shrink:0; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px;">
           <a id="dl-file2" href="의사결정안건.txt" download="의사결정안건.txt"
-             style="display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(11px,1.1vw,13px); padding:7px 14px; border-radius:7px; text-decoration:none;">
-            ⬇ 다운로드
+             onclick="event.preventDefault(); downloadEmbed(2)"
+             style="display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:#fff; font-weight:700; font-size:clamp(11px,1.1vw,13px); padding:9px 18px; border-radius:8px; text-decoration:none; white-space:nowrap; cursor:pointer;">
+            ⬇ 의사결정안건.txt
           </a>
-        </div>
-        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
-        <div class="card" style="text-align:center; background:var(--green-bg); border-color:var(--green-border);">
-          <span style="font-size:28px;">🤖</span>
-          <div class="card-title" style="margin-top:8px; color:var(--green);">/의사결정분석</div>
-          <div class="card-desc">파일 자동 읽기 · 분석</div>
-        </div>
-        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
-        <div class="card" style="text-align:center;">
-          <span style="font-size:28px;">📝</span>
-          <div class="card-title" style="margin-top:8px;">의사결정_분석.html</div>
-          <div class="card-desc">PDF로 저장 가능한 결과물</div>
+          <span style="font-size:11px; color:var(--text-3);">실습 파일 다운로드</span>
         </div>
       </div>
-      <div class="hbox" style="margin-top:12px;">
-        <p>파일 다운로드 → VSCode 폴더에 넣기 → <strong>/의사결정분석</strong> 입력 → 나머지는 에이전트가 알아서</p>
+      <p class="slide-subtitle" style="margin-bottom:20px; font-size:clamp(14px,1.7vw,19px);">미팅 전에 <strong>회의실에 앉아있을 3명의 목소리</strong>를 미리 들어보세요.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
+
+        <!-- 추진론자 -->
+        <div style="border-radius:14px; overflow:hidden; border:1.5px solid #86EFAC;">
+          <div style="background:#16A34A; padding:14px 18px;">
+            <div style="font-size:22px; margin-bottom:4px;">💚</div>
+            <div style="font-size:clamp(14px,1.5vw,17px); font-weight:800; color:#fff;">추진론자</div>
+            <div style="font-size:clamp(11px,1.1vw,13px); color:#BBF7D0; margin-top:2px;">"해야 합니다"</div>
+          </div>
+          <div style="background:#F0FDF4; padding:14px 18px;">
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:7px;">
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#166534; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>기회와 기대효과 강조</li>
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#166534; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>경쟁사 대비 우위 논거</li>
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#166534; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>빠른 실행을 촉구</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 비판론자 -->
+        <div style="border-radius:14px; overflow:hidden; border:1.5px solid #FCA5A5;">
+          <div style="background:#DC2626; padding:14px 18px;">
+            <div style="font-size:22px; margin-bottom:4px;">🔴</div>
+            <div style="font-size:clamp(14px,1.5vw,17px); font-weight:800; color:#fff;">비판론자</div>
+            <div style="font-size:clamp(11px,1.1vw,13px); color:#FECACA; margin-top:2px;">"잠깐만요"</div>
+          </div>
+          <div style="background:#FEF2F2; padding:14px 18px;">
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:7px;">
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#991B1B; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>리스크와 실패 시나리오 제기</li>
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#991B1B; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>예산·일정 현실성 의문</li>
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#991B1B; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>과거 유사 실패 사례 언급</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 현실론자 -->
+        <div style="border-radius:14px; overflow:hidden; border:1.5px solid var(--pastel-border);">
+          <div style="background:#92400E; padding:14px 18px;">
+            <div style="font-size:22px; margin-bottom:4px;">🟡</div>
+            <div style="font-size:clamp(14px,1.5vw,17px); font-weight:800; color:#fff;">현실론자</div>
+            <div style="font-size:clamp(11px,1.1vw,13px); color:#FDE68A; margin-top:2px;">"이렇게 하면 어떨까요"</div>
+          </div>
+          <div style="background:#FFFBEB; padding:14px 18px;">
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:7px;">
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#78350F; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>단계적·조건부 접근 제안</li>
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#78350F; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>타협안과 대안 제시</li>
+              <li style="font-size:clamp(12px,1.2vw,14px); color:#78350F; padding-left:14px; position:relative; line-height:1.5;"><span style="position:absolute;left:0;">→</span>합의 도출 방향 모색</li>
+            </ul>
+          </div>
+        </div>
+
       </div>
+
+      <div style="margin-top:16px; background:var(--pastel-bg); border-left:4px solid var(--brand); border-radius:0 10px 10px 0; padding:12px 18px;">
+        <p style="font-size:clamp(13px,1.3vw,15px); color:var(--text-2); line-height:1.6;">
+          에이전트가 <strong>3명의 관점을 동시에 시뮬레이션</strong>해서 HTML로 저장합니다.<br>
+          미팅 전에 어떤 반론이 나올지, 어떻게 대응할지 미리 준비하세요.
+        </p>
+      </div>
+
       <div class="admin-panel" style="display:none; margin-top:10px; border:1.5px dashed var(--pastel-border); border-radius:8px; padding:12px 16px; background:var(--pastel-bg);">
         <p style="font-size:11px; font-weight:800; letter-spacing:0.08em; color:var(--brand); margin-bottom:8px;">🔧 강사용 — 파일 링크 교체</p>
         <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">파일 URL (Google Drive 또는 파일명)</label>
@@ -1279,38 +1449,28 @@
   <div class="slide scrollable" id="s14">
     <div class="slide-header">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">14 / 16</span>
+      <span class="slide-num">14 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">실습 3 · /의사결정분석 · ① 에이전트 생성</p>
       <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
+      <div class="context-note">이 프롬프트 한 번으로 <strong>3인 페르소나 동시 실행 오케스트레이터</strong>가 만들어집니다. 추진·비판·현실론자가 Agent 툴로 병렬 실행됩니다.</div>
       <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
       <div class="prompt-wrap">
-        <pre class="prompt-box" id="p3a"><span class="comment"># 에이전트 생성 요청 — 파일 자동 읽기 + 결과 저장형</span>
+        <pre class="prompt-box" id="p3a"><span class="comment"># 에이전트 생성 요청 — 의사결정 미팅 3인 시뮬레이터</span>
 
 .claude/commands/ 폴더 안에 <span class="highlight">의사결정분석.md</span> 파일을 만들어줘.
 
-이 파일은 내가 /의사결정분석 커맨드로 부를 에이전트야.
-이 에이전트의 역할: <span class="highlight">전략적 의사결정 파트너 (글로벌 컨설팅 파트너급)</span>
+이 파일은 내가 /의사결정분석 커맨드로 부를 <span class="highlight">에이전트</span>야.
+이 에이전트의 역할: <span class="highlight">의사결정 미팅 오케스트레이터 — Agent 툴로 3인 페르소나를 동시에 실행해 종합 판단 도출</span>
 
-호출되면 반드시 이 순서대로 실행해:
+호출되면 이 순서대로 실행해:
 1. 현재 폴더에서 <span class="highlight">.txt 파일을 찾아서 내용을 읽어</span>
-2. 아래 형식으로 분석해:
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 상황 정의 — 핵심 이슈 한 문장
-📊 선택지 분석 — 각 대안의 장단점
-⚖️ 판단 기준 — 핵심 고려 요소
-🎯 권고안 — 최선의 선택과 이유
-📋 실행 계획 — 첫 3가지 액션
-😈 악마의 변호인 — 권고안의 가장 큰 약점 3가지
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-3. 분석 결과를 <span class="highlight">인쇄 가능한 HTML 형식</span>으로 만들어:
-   - 파일명: <span class="highlight">'의사결정_분석.html'</span>
-   - 깔끔한 레이아웃, 섹션별 구분선, @media print 스타일 포함
-   - 파일 저장 후 브라우저에서 바로 열어줘
-   (열린 브라우저에서 Cmd+P → PDF로 저장 가능)
+2. <span class="highlight">Agent 툴로 3명을 동시에 실행해</span> (각자에게 안건 내용을 전달):
+   - Agent 1 (💚 추진론자): 기회·기대효과·실행 논거 중심으로 주장
+   - Agent 2 (🔴 비판론자): 리스크·실패 시나리오·반론 중심으로 주장
+   - Agent 3 (🟡 현실론자): 단계적 접근·조건부 대안·합의 방향 제시
+3. 세 결과를 받아 🎯 종합 판단을 추가하고 <span class="highlight">의사결정_분석.html</span>로 저장하고 브라우저에서 열어줘
 4. 마지막에 "이 결정에서 추가로 고려할 점이 있나요?" 라고 물어봐</pre>
         <button class="copy-btn" onclick="copyPrompt('p3a', this)">복사</button>
       </div>
@@ -1323,7 +1483,7 @@
   <div class="slide bg-alt" id="s15">
     <div class="slide-header" style="background:var(--pastel-bg);">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">15 / 16</span>
+      <span class="slide-num">15 / 19</span>
     </div>
     <div class="slide-body" style="align-items:center; text-align:center;">
       <p class="eyebrow">실습 3 · /의사결정분석 · ② 실행</p>
@@ -1336,8 +1496,8 @@
       <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
         <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
         <ul>
-          <li>폴더의 <strong>의사결정안건.txt</strong> 파일을 찾아 읽기</li>
-          <li>선택지 분석 · 권고안 · 악마의 변호인 생성</li>
+          <li>폴더의 <strong>의사결정안건.txt</strong> 파일을 스스로 찾아 읽기</li>
+          <li>추진론자 · 비판론자 · 현실론자 3인 관점 동시 시뮬레이션</li>
           <li><strong>의사결정_분석.html</strong> 생성 → 브라우저에서 자동으로 열림</li>
           <li>브라우저에서 <kbd style="background:#F2F2F0;border:1px solid #DDD;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px;">Cmd+P</kbd> → <strong>PDF로 저장</strong></li>
         </ul>
@@ -1346,26 +1506,145 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       SLIDE 16 — 오늘의 결과물
+       SLIDE 16 — 실습 4: /시장브리핑 소개
   ══════════════════════════════════════ -->
-  <div class="slide bg-alt" id="s16">
+  <div class="slide" id="s16">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">16 / 19</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 4 · 에이전트 구축 · ★★★</p>
+      <h2 class="slide-title"><span class="cmd" style="font-size:0.85em;">/시장브리핑</span> 에이전트</h2>
+      <p class="slide-subtitle" style="margin-bottom:16px;">파일 없이, <strong>인터넷을 실시간으로 검색하는</strong> 에이전트입니다. 명령 한 줄로 오늘의 시장 동향을 수집합니다.</p>
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr; align-items:center; gap:0; margin-top:4px;">
+        <div class="card" style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <span style="font-size:28px;">🌐</span>
+          <div class="card-title">인터넷 (실시간)</div>
+          <div class="card-desc" style="font-size:clamp(11px,1.1vw,13px);">파일 준비 불필요<br>WebSearch로 수집</div>
+        </div>
+        <div style="text-align:center; font-size:24px; color:var(--brand); font-weight:900;">→</div>
+        <div class="card" style="text-align:center; background:var(--green-bg); border-color:var(--green-border);">
+          <span style="font-size:28px;">🤖</span>
+          <div class="card-title" style="margin-top:6px; color:var(--green);">/시장브리핑</div>
+          <div class="card-desc" style="font-size:clamp(11px,1.1vw,13px);">리서처 4인<br>동시 검색</div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:16px;">
+        <div style="background:#EEF3FF; border:1.5px solid #2B59C3; border-radius:10px; padding:10px 12px; text-align:center;">
+          <div style="font-size:18px; margin-bottom:4px;">🏭</div>
+          <div style="font-size:11px; font-weight:800; color:#1A3A8F;">산업 리서처</div>
+          <div style="font-size:10px; color:#4B5563; margin-top:3px;">제약·바이오 뉴스</div>
+        </div>
+        <div style="background:#fff0f0; border:1.5px solid #D94040; border-radius:10px; padding:10px 12px; text-align:center;">
+          <div style="font-size:18px; margin-bottom:4px;">📈</div>
+          <div style="font-size:11px; font-weight:800; color:#A52020;">거시경제 분석가</div>
+          <div style="font-size:10px; color:#4B5563; margin-top:3px;">금리·환율·지수</div>
+        </div>
+        <div style="background:#fffbe6; border:1.5px solid #D97706; border-radius:10px; padding:10px 12px; text-align:center;">
+          <div style="font-size:18px; margin-bottom:4px;">🏢</div>
+          <div style="font-size:11px; font-weight:800; color:#92570A;">경쟁사 모니터</div>
+          <div style="font-size:10px; color:#4B5563; margin-top:3px;">주요 제약사 동향</div>
+        </div>
+        <div style="background:#f0fff4; border:1.5px solid #2E7D52; border-radius:10px; padding:10px 12px; text-align:center;">
+          <div style="font-size:18px; margin-bottom:4px;">📋</div>
+          <div style="font-size:11px; font-weight:800; color:#1A5C38;">규제 트래커</div>
+          <div style="font-size:10px; color:#4B5563; margin-top:3px;">식약처·FDA 동향</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 17 — /시장브리핑 에이전트 생성
+  ══════════════════════════════════════ -->
+  <div class="slide scrollable" id="s17">
+    <div class="slide-header">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">17 / 19</span>
+    </div>
+    <div class="slide-body">
+      <p class="eyebrow">실습 4 · /시장브리핑 · ① 에이전트 생성</p>
+      <h2 class="slide-title" style="font-size:clamp(22px,2.8vw,36px);">에이전트 만들기</h2>
+      <div class="context-note">이 프롬프트 한 번으로 <strong>리서처 4인이 실시간으로 인터넷을 검색</strong>하는 오케스트레이터가 만들어집니다.</div>
+      <div class="prompt-label">📋 Claude 채팅창에 붙여넣기</div>
+      <div class="prompt-wrap">
+        <pre class="prompt-box" id="p4a"><span class="comment"># 에이전트 생성 요청 — 시장 브리핑 오케스트레이터</span>
+
+.claude/commands/ 폴더 안에 <span class="highlight">시장브리핑.md</span> 파일을 만들어줘.
+
+이 파일은 내가 /시장브리핑 커맨드로 부를 <span class="highlight">에이전트</span>야.
+이 에이전트의 역할: <span class="highlight">Agent 툴로 리서처 4명을 동시에 실행해 오늘의 시장 동향을 실시간 수집하는 오케스트레이터</span>
+
+호출되면 이 순서대로 실행해:
+1. <span class="highlight">Agent 툴로 리서처 4명을 동시에 실행해</span> (각자 WebSearch 사용):
+   - Agent 1 (🏭 산업 리서처): 오늘 제약·바이오·헬스케어 주요 뉴스 3~5건
+   - Agent 2 (📈 거시경제 분석가): 금리·환율·유가·주요 지수 오늘 동향
+   - Agent 3 (🏢 경쟁사 모니터): 주요 제약사 신약·M&A·임상 결과 뉴스
+   - Agent 4 (📋 규제 트래커): 식약처·FDA 최신 허가·규제 뉴스
+2. 네 결과를 통합해서 <span class="highlight">시장브리핑_결과.html</span>로 저장하고 브라우저에서 열어줘</pre>
+        <button class="copy-btn" onclick="copyPrompt('p4a', this)">복사</button>
+      </div>
+      <div class="result-box">
+        <div class="result-title">⚙️ 파일이 만들어지면</div>
+        <ul>
+          <li>탐색기에 <strong>.claude/commands/시장브리핑.md</strong> 파일 생성 확인</li>
+          <li>이제 다음 슬라이드에서 <strong>/시장브리핑</strong> 한 줄만 입력하면 됩니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 18 — /시장브리핑 실행
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s18">
     <div class="slide-header" style="background:var(--pastel-bg);">
       <img src="daewoong-logo-basic.svg" alt="Daewoong">
-      <span class="slide-num">16 / 16</span>
+      <span class="slide-num">18 / 19</span>
+    </div>
+    <div class="slide-body" style="align-items:center; text-align:center;">
+      <p class="eyebrow">실습 4 · /시장브리핑 · ② 실행</p>
+      <h2 class="slide-title">이게 전부입니다</h2>
+      <p class="slide-subtitle" style="margin-bottom:32px;">Claude 채팅창에 아래 한 줄만 입력하세요.</p>
+      <div class="prompt-wrap" style="max-width:440px; margin:0 auto;">
+        <pre class="prompt-box" id="p4b" style="font-size:clamp(18px,2.3vw,28px); text-align:center; padding:28px 40px; letter-spacing:0.04em;">/시장브리핑</pre>
+        <button class="copy-btn" onclick="copyPrompt('p4b', this)">복사</button>
+      </div>
+      <div class="result-box" style="max-width:600px; margin:24px auto 0; text-align:left;">
+        <div class="result-title">✅ 에이전트가 자동으로 실행하는 것</div>
+        <ul>
+          <li>🏭 산업 리서처 · 📈 거시경제 분석가 · 🏢 경쟁사 모니터 · 📋 규제 트래커 <strong>동시 실행</strong></li>
+          <li>인터넷에서 오늘 날짜 기준 최신 뉴스 실시간 수집</li>
+          <li><strong>시장브리핑_결과.html</strong> 생성 → 브라우저에서 자동으로 열림</li>
+          <li>브라우저에서 <kbd style="background:#F2F2F0;border:1px solid #DDD;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px;">Cmd+P</kbd> → <strong>PDF로 저장</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 19 — 오늘의 결과물
+  ══════════════════════════════════════ -->
+  <div class="slide bg-alt" id="s19">
+    <div class="slide-header" style="background:var(--pastel-bg);">
+      <img src="daewoong-logo-basic.svg" alt="Daewoong">
+      <span class="slide-num">19 / 19</span>
     </div>
     <div class="slide-body">
       <p class="eyebrow">마무리</p>
       <h2 class="slide-title">오늘 손에 남는 것</h2>
       <div class="cards col2 mt16">
         <div class="card" style="background:var(--white);">
-          <div class="card-label">취득 에이전트 2종</div>
+          <div class="card-label">취득 에이전트 3종</div>
           <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
-            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/보고서요약</span>
+            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/보고분석</span>
             <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/의사결정분석</span>
+            <span class="cmd" style="font-size:0.9em; padding:6px 14px;">/시장브리핑</span>
           </div>
           <div class="card-desc" style="margin-top:16px; line-height:1.8;">
-            .txt 파일 자동 읽기 → 분석 → .md 저장<br>
-            이름만 불러도 알아서 파일 찾고 결과 저장
+            서브에이전트 병렬 실행 → 결과 통합 → HTML 저장<br>
+            이름만 불러도 팀처럼 나눠서 분석하고, 저장
           </div>
         </div>
         <div class="card" style="background:var(--white);">
@@ -1377,7 +1656,7 @@
             </div>
             <div class="step-item">
               <div class="step-num" style="width:26px;height:26px;font-size:12px;">2</div>
-              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">my-agents 폴더 열기</strong></div>
+              <div class="step-text"><strong style="font-size:clamp(13px,1.3vw,15px);">제작한 폴더 열기</strong></div>
             </div>
             <div class="step-item">
               <div class="step-num" style="width:26px;height:26px;font-size:12px;">3</div>
@@ -1427,6 +1706,7 @@
     setTimeout(() => slides[cur].classList.remove('prev'), 400);
     cur = n;
     slides[cur].classList.add('active');
+    if (n === 2) { curTab3Idx = 0; showTab3('chat'); }
     updateUI();
   }
 
@@ -1440,9 +1720,26 @@
     document.getElementById('progress').style.width = pct + '%';
   }
 
+  const S3_TABS = ['chat','agent','multi'];
+  let curTab3Idx = 0;
+
   document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(1); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  { e.preventDefault(); go(-1); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      if (cur === 2 && curTab3Idx < S3_TABS.length - 1) {
+        showTab3(S3_TABS[++curTab3Idx]);
+      } else {
+        go(1);
+      }
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (cur === 2 && curTab3Idx > 0) {
+        showTab3(S3_TABS[--curTab3Idx]);
+      } else {
+        go(-1);
+      }
+    }
     if (e.key === 'f' || e.key === 'F') {
       if (!document.fullscreenElement) document.documentElement.requestFullscreen();
       else document.exitFullscreen();
@@ -1469,6 +1766,205 @@
   }
 
   updateUI();
+
+  function showTab3(tab) {
+    curTab3Idx = S3_TABS.indexOf(tab);
+    ['chat','agent','multi'].forEach(t => {
+      const panel = document.getElementById('s3tab-' + t);
+      const btn   = document.getElementById('s3btn-' + t);
+      panel.style.display = 'none';
+      btn.style.background = '#F5F5F4';
+      btn.style.borderColor = '#E0DDD9';
+      btn.style.color = '#666';
+      btn.style.borderWidth = '1.5px';
+    });
+    const activePanel = document.getElementById('s3tab-' + tab);
+    activePanel.style.display = tab === 'multi' ? 'flex' : 'flex';
+    activePanel.style.flexDirection = tab === 'multi' ? 'column' : 'row';
+    const activeBtn = document.getElementById('s3btn-' + tab);
+    activeBtn.style.background = 'var(--brand)';
+    activeBtn.style.borderColor = 'var(--brand)';
+    activeBtn.style.color = '#fff';
+    activeBtn.style.borderWidth = '2px';
+  }
+
+  const EMBED_CONTENT = {
+    1: `대웅제약 2026년 1분기 경영실적 보고서
+작성일: 2026년 4월 15일
+작성부서: 경영기획팀
+
+═══════════════════════════════════════════
+1. 재무 성과 요약
+═══════════════════════════════════════════
+
+[매출]
+- 연결 매출액: 3,412억 원
+- 전년 동기(3,151억 원) 대비 +8.3% 성장
+- 목표 대비 달성률: 96.4% (목표 3,540억 원)
+
+[영업이익]
+- 영업이익: 271억 원
+- 전년 동기(277억 원) 대비 -2.1% 감소
+- 영업이익률: 7.9% (전년 8.8%)
+
+[당기순이익]
+- 순이익: 198억 원
+- 전년 동기 대비 -5.3%
+
+═══════════════════════════════════════════
+2. 사업부문별 실적
+═══════════════════════════════════════════
+
+[ETC(전문의약품)]
+- 매출: 2,104억 원 / 전년 대비 +11.2%
+- 주요 성장 품목: 펙수클루(위식도역류질환), 올로스타(고지혈증)
+- 펙수클루: 처방 건수 전월 대비 +18% 급증, 원외처방 확대 본격화
+
+[OTC(일반의약품)]
+- 매출: 687억 원 / 전년 대비 +3.1%
+- 우루사 계절 비수기 영향으로 성장 제한적
+
+[수출]
+- 매출: 621억 원 / 전년 대비 +6.7%
+- 동남아 시장 성장세 지속, 북미 파트너십 협상 진행 중
+
+═══════════════════════════════════════════
+3. 핵심 이슈 및 리스크
+═══════════════════════════════════════════
+
+[긍정 요인]
+- 펙수클루 글로벌 라이선스 계약 협상 2건 진행 중 (미국, 유럽)
+- P-CAB 계열 시장 성장세 본격화, 점유율 확대 중
+- 신약 파이프라인 DWP16001 임상 2상 중간 결과 양호
+
+[부정 요인 / 리스크]
+- 원자재(API) 가격 15.3% 상승 → 원가율 악화 주 요인
+- 인건비: 전년 대비 +9.1% 증가 (정기 임금 인상 + 인원 확대)
+- 나보타 FDA 재심사 결과 6월 말 예정 → 결과에 따라 북미 매출 영향
+- B사 SGLT-2 신약 적응증 확대 신청 → 경쟁 심화 우려
+
+[규제 / 허가]
+- 올로스타 복합제 식약처 허가 심사 중 (예상 허가: 3분기)
+- DWP16001 국내 임상 2상 종료 예정 시점: 2026년 9월
+
+═══════════════════════════════════════════
+4. 하반기 전망 및 주요 일정
+═══════════════════════════════════════════
+
+[하반기 매출 목표]
+- 상반기 부진분 만회를 위해 하반기 목표 상향 검토 중
+- 연간 목표: 7,200억 원 유지 (현재 달성 경로 재조정 필요)
+
+[주요 일정]
+- 5월: 펙수클루 미국 파트너사 현지 방문 및 최종 조건 협상
+- 6월: 나보타 FDA 심사 결과 발표
+- 7월: 올로스타 복합제 허가 예상, 출시 준비
+- 9월: DWP16001 임상 2상 결과 발표 (학회 발표 예정)
+- 4분기: 신제품 2종 출시 예정 (OTC 라인 확대)
+
+═══════════════════════════════════════════
+5. 건의사항 및 결정 요청 사항
+═══════════════════════════════════════════
+
+1. 원가 절감 대책: API 장기 계약 전환 검토 (6월 이사회 안건 상정 예정)
+2. 펙수클루 글로벌 전략: 직접 진출 vs 라이선스 중 방향 확정 필요
+3. 나보타 리스크 대응: FDA 결과 시나리오별 대응 계획 승인 요청
+4. 하반기 마케팅 예산: 10억 원 추가 배정 검토 요청 (ETC 점유율 방어)`,
+    2: `대웅제약 AI 자동화 솔루션 도입 검토 안건
+작성일: 2026년 6월 28일
+검토부서: AX팀 / 경영기획팀
+결재라인: 본부장 → 부사장 → 대표이사
+
+═══════════════════════════════════════════
+1. 검토 배경
+═══════════════════════════════════════════
+
+영업·마케팅 현장의 반복 업무(보고서 작성, 데이터 집계, 일정 조율)에
+소요되는 시간이 팀 전체 업무의 약 38%에 달함 (2026년 1분기 업무분석 결과).
+이를 AI 자동화로 전환할 경우 연간 약 2,400시간 절감 가능.
+
+AI 자동화 솔루션 시장 조사 결과, 대웅제약 규모·업종에 적합한
+후보 2개사로 압축하여 최종 의사결정 요청.
+
+═══════════════════════════════════════════
+2. 후보 솔루션 비교
+═══════════════════════════════════════════
+
+[A사 — AutoFlow Pro]
+- 특징: 제약·바이오 특화 AI 플랫폼, 국내 대형 제약사 3곳 도입 완료
+- 주요 기능: 영업보고 자동화, ERP 연동, 규제 문서 초안 생성
+- 도입 비용: 초기 구축 1.8억 원 + 연간 라이선스 3.2억 원
+- 도입 기간: 계약 후 약 5개월 (커스터마이징 포함)
+- 레퍼런스: D제약, Y바이오, H헬스케어
+
+[B사 — SmartOps AI]
+- 특징: 범용 업무 자동화 플랫폼, 빠른 도입이 강점
+- 주요 기능: 문서 자동화, 이메일 분류, 일정 관리 (제약 특화 기능 부재)
+- 도입 비용: 초기 구축 0.6억 원 + 연간 라이선스 1.1억 원
+- 도입 기간: 계약 후 약 6주
+- 레퍼런스: 제조업·유통업 중심 (제약사 레퍼런스 없음)
+
+═══════════════════════════════════════════
+3. 주요 제약 조건
+═══════════════════════════════════════════
+
+[예산]
+- 현재 승인된 AX 예산: 연간 1.5억 원
+- 추가 예산 확보 가능 시점: 2026년 4분기 (예산 재편성 시)
+
+[내부 역량]
+- AX팀 인원: 6명 (IT 전문인력 2명 포함)
+- 현재 병행 중인 프로젝트: Claude Code 내재화, ERP 고도화
+
+[일정]
+- 경영진 요청 사항: 2026년 내 가시적 성과 필요
+- 3분기 주주총회 전 도입 방향 확정 권고
+
+═══════════════════════════════════════════
+4. 쟁점 사항
+═══════════════════════════════════════════
+
+① 예산 범위: 현재 예산으로는 B사만 가능, A사는 추가 확보 필요
+② 속도 vs 완성도: B사는 6주 내 가동 가능하나 제약 특화 기능 부족
+③ 확장성: A사는 향후 규제 문서 자동화까지 확장 가능, B사는 한계 있음
+④ 리스크: A사 도입 실패 시 매몰비용 1.8억 원, B사는 0.6억 원
+
+═══════════════════════════════════════════
+5. 결정 요청 사항
+═══════════════════════════════════════════
+
+아래 세 가지 중 방향 결정 요청:
+
+[Option 1] A사 즉시 계약
+→ 추가 예산 1.7억 원 확보 방안 병행 마련
+
+[Option 2] B사 우선 도입 → 4분기 A사 전환 검토
+→ B사로 단기 성과 확보 후 예산 확보 시 A사 재검토
+
+[Option 3] 현재 내부 구축(Claude Code 활용) 고도화 집중
+→ 외부 솔루션 도입 보류, AX팀 자체 역량으로 자동화 추진
+
+검토 기한: 2026년 7월 15일`
+  };
+  const EMBED_NAME = { 1: '1분기실적보고서.txt', 2: '의사결정안건.txt' };
+
+  function downloadEmbed(num) {
+    const el = document.getElementById('dl-file' + num);
+    const href = el ? el.getAttribute('href') : '';
+    if (href && href.startsWith('http')) {
+      window.open(href, '_blank');
+      return;
+    }
+    const blob = new Blob([EMBED_CONTENT[num]], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = EMBED_NAME[num];
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   function switchOS(os, btn) {
     const parent = btn.closest('.slide-body');
