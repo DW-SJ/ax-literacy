@@ -885,8 +885,8 @@
     <div class="practice-header">
       <div class="practice-num">1</div>
       <div class="practice-header-text">
-        <div class="tag">바이브코딩</div>
-        <h2>말로 만드는 웹사이트</h2>
+        <div class="tag">에이전트 생성 · 바이브코딩</div>
+        <h2>웹 빌더 에이전트 만들기</h2>
       </div>
     </div>
 
@@ -898,145 +898,159 @@
 
     <div class="context-box">
       <div class="context-title">🎬 이 실습에서 배우는 것</div>
-      <strong>"바이브코딩(Vibe Coding)"</strong>이란 코드를 직접 짜지 않고, 원하는 것을 말로 설명하면 AI가 자동으로 만들어주는 방식입니다. 오늘은 부서 소개 웹페이지를 5분 만에 만들어봅니다.
+      첫 번째 실습은 가장 단순한 에이전트부터 시작합니다. <strong>웹 빌더 에이전트</strong>를 직접 만들고, 그 에이전트에게 부서 소개 페이지를 만들도록 시켜봅니다. "만들어줘"라고 Claude에 바로 말하는 것과 <strong>에이전트를 통해 시키는 것</strong>이 어떻게 다른지 체험합니다.
     </div>
 
     <hr class="section-hr">
 
-    <div class="prompt-label">📋 프롬프트 1 — 기본 웹사이트 생성 (복사 후 Claude에 붙여넣기)</div>
+    <div class="prompt-label">📋 프롬프트 1 — 에이전트 생성 (Claude Code에 붙여넣기 → .claude/agents/ 파일 자동 생성)</div>
     <div class="prompt-wrap">
-      <pre class="prompt-box" id="p1a"><span class="comment"># 웹사이트 만들기 요청</span>
+      <pre class="prompt-box" id="p1a"><span class="comment"># 웹 빌더 에이전트 만들기</span>
 
-저는 대웅제약 AX팀에서 일하고 있습니다.
-우리 팀을 소개하는 <span class="highlight">웹페이지 하나</span>를 만들어주세요.
+나는 부서 소개 페이지나 내부 보고 자료를 HTML로 자주 만들어야 해.
+<span class="highlight">.claude/agents/ 폴더</span>에 웹빌더.md 파일을 만들어줘.
 
-조건:
-- 제목: "대웅제약 AX팀 — AI로 일하는 방식을 바꿉니다"
-- 색상: 주황색(#F18A00) 포인트, 흰 배경
-- 내용: 팀 소개, 주요 업무 3가지, 연락처 섹션
-- 깔끔하고 전문적인 디자인
-- HTML 파일 하나로 완성해주세요</pre>
+이 에이전트의 역할:
+- 말로 설명하면 HTML 파일을 바로 만들어주는 웹 빌더
+- 대웅제약 브랜드 색상(주황 #F18A00)과 스타일 자동 적용
+- 요청한 내용을 하나의 완성된 HTML 파일로 저장
+
+사용 가능한 도구: Write, Read
+모델: 기본값</pre>
       <button class="copy-btn" onclick="copyPrompt('p1a', this)">복사</button>
     </div>
 
-    <div class="prompt-label">📋 프롬프트 2 — 내용 수정 요청 (원하는 대로 바꿔보세요)</div>
+    <div class="prompt-label">📋 프롬프트 2 — 생성된 에이전트 호출 (@웹빌더 로 지시)</div>
     <div class="prompt-wrap">
-      <pre class="prompt-box" id="p1b"><span class="comment"># 수정 요청 — 이렇게 원하는 부분을 자연스럽게 말하면 됩니다</span>
+      <pre class="prompt-box" id="p1b"><span class="comment"># 웹빌더 에이전트에게 작업 지시</span>
 
-좋아요! 몇 가지 바꿔주세요:
-- 팀 소개 문구를 좀 더 <span class="highlight">임팩트 있게</span> 수정해주세요
-- 하단에 대웅제약 로고 이미지 자리를 만들어주세요
-- 배경에 은은한 <span class="highlight">그라디언트</span> 효과를 넣어주세요
-- 전체적으로 더 현대적인 느낌으로 개선해주세요</pre>
+@웹빌더
+
+우리 팀을 소개하는 웹페이지를 만들어줘.
+
+내용:
+- 제목: "대웅제약 AX팀 — AI로 일하는 방식을 바꿉니다"
+- 팀 소개 문구 (임팩트 있게 작성)
+- 주요 업무 3가지
+- 연락처 섹션
+
+파일명: ax팀소개.html 로 저장해줘.</pre>
       <button class="copy-btn" onclick="copyPrompt('p1b', this)">복사</button>
     </div>
 
+    <div class="prompt-label">📋 프롬프트 3 — 에이전트에게 수정 지시</div>
+    <div class="prompt-wrap">
+      <pre class="prompt-box" id="p1c"><span class="comment"># 수정 요청 — 에이전트가 기억하고 있어서 이어서 지시 가능</span>
+
+@웹빌더
+
+방금 만든 페이지에서:
+- 배경에 은은한 <span class="highlight">그라디언트</span> 효과 추가
+- 하단에 로고 이미지 자리 추가
+- 전체적으로 더 현대적인 느낌으로 개선해줘</pre>
+      <button class="copy-btn" onclick="copyPrompt('p1c', this)">복사</button>
+    </div>
+
     <div class="result-box">
-      <div class="result-title">✅ 이런 결과가 나옵니다</div>
+      <div class="result-title">✅ 에이전트로 만들면 무엇이 다른가요?</div>
       <ul>
-        <li>Claude가 HTML 코드를 바로 생성합니다</li>
-        <li>코드 위에 "Open in Browser" 버튼이 생기면 클릭해서 미리보기</li>
-        <li>마음에 들 때까지 말로 수정 요청을 계속할 수 있습니다</li>
-        <li><strong>핵심:</strong> 코드는 볼 필요 없이 결과물만 확인하면 됩니다</li>
+        <li><strong>.claude/agents/웹빌더.md 파일이 생성됩니다</strong> — 파일 탐색기에서 직접 확인 가능</li>
+        <li>이 파일이 있는 한 @웹빌더 는 언제든 호출 가능 — 세션이 끊겨도 사라지지 않음</li>
+        <li>팀원과 프로젝트 폴더를 공유하면 <strong>팀 전체가 같은 웹빌더 에이전트</strong>를 씁니다</li>
+        <li>에이전트 파일을 열어서 역할을 수정하면 즉시 반영됩니다</li>
       </ul>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════ -->
-<!--  LAB 2: MEETING AGENT           -->
+<!--  LAB 2: AGENT CREATION          -->
 <!-- ═══════════════════════════════ -->
 <section class="content-section alt-bg" id="lab2">
   <div class="content-inner">
     <div class="practice-header">
       <div class="practice-num">2</div>
       <div class="practice-header-text">
-        <div class="tag">에이전트 구축</div>
-        <h2>사장단 회의 준비 에이전트</h2>
+        <div class="tag">에이전트 생성 · 병렬 실행</div>
+        <h2>보고서 분석 전문가 팀 만들기</h2>
       </div>
     </div>
 
     <div class="practice-meta">
       <div class="practice-chip">⏱ 약 20분</div>
       <div class="practice-chip">🎯 난이도: ★★☆</div>
-      <div class="practice-chip">📄 실제 업무 즉시 적용 가능</div>
+      <div class="practice-chip">⚡ 3인 병렬 분석</div>
     </div>
 
     <div class="context-box">
       <div class="context-title">🎬 이 실습에서 배우는 것</div>
-      사장단 회의 전에 보고서를 읽고 핵심을 파악하는 데 시간이 얼마나 걸리나요? AI 에이전트를 활용하면 어떤 보고서든 <strong>3분 이내에 핵심 요약 + 날카로운 질문 리스트</strong>를 만들 수 있습니다.
+      보고서 하나를 <strong>3명의 전문가가 동시에</strong> 다른 시각으로 분석하면 어떨까요? 즉시대응 분석가·리스크 탐지자·경영 자문가를 에이전트로 만들고, 그 셋을 동시에 실행하면 <strong>3가지 관점의 분석 결과가 병렬로</strong> 돌아옵니다. 에이전트는 <code>.claude/agents/</code> 폴더에 파일로 저장되어 영구 재사용됩니다.
     </div>
 
     <hr class="section-hr">
 
-    <div class="prompt-label">📋 프롬프트 1 — 에이전트 설정 (처음 한 번만, 대화 시작 시 붙여넣기)</div>
+    <div class="prompt-label">📋 프롬프트 1 — 전문가 3인 에이전트 생성 (Claude Code에 붙여넣기)</div>
     <div class="prompt-wrap">
-      <pre class="prompt-box" id="p2a"><span class="comment"># 회의 준비 에이전트 설정</span>
+      <pre class="prompt-box" id="p2a"><span class="comment"># 보고서 분석 전문가 팀 에이전트 생성</span>
 
-지금부터 당신은 나의 <span class="highlight">사장단 회의 준비 전문 어시스턴트</span>입니다.
+나는 보고서 분석 업무를 자주 해.
+<span class="highlight">.claude/agents/ 폴더</span>에 아래 3개 에이전트 파일을 각각 만들어줘.
 
-내가 보고서나 자료를 붙여넣으면, 다음 형식으로 분석해주세요:
+<span class="highlight">즉시대응분석가.md</span>
+설명: 보고서에서 24~48시간 내 반드시 대응해야 할 긴급 이슈를 찾는 전문가
+도구: Read
+역할: 이슈 제목 / 왜 지금인가 / 대응 행동 2가지 / 안 할 경우 피해 형식으로 이슈 2개 반환
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📌 [핵심 요약 — 3줄]
-보고서의 핵심을 딱 3문장으로 요약
+<span class="highlight">리스크탐지자.md</span>
+설명: 보고서에 명시되지 않은 잠재 리스크를 발굴하는 전문가
+도구: Read, WebSearch
+역할: 리스크 제목 / 단서 / 발생 가능성과 근거 / 사전 차단 방법 형식으로 리스크 3개 반환
 
-❓ [사장이 반드시 물어봐야 할 질문 5가지]
-1.
-2.
-3.
-4.
-5.
-
-⚠️ [리스크 및 우려사항]
-놓치면 안 되는 위험 요소와 주의할 점
-
-💡 [추가 확인이 필요한 사항]
-회의 전에 미리 알아두면 좋을 배경 정보
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-준비됐으면 "준비완료"라고 답해주세요.</pre>
+<span class="highlight">경영자문가.md</span>
+설명: CEO 관점에서 보고서의 날카로운 질문과 말하지 않은 것을 정리하는 C레벨 자문가
+도구: Read
+역할: CEO 예상 질문 5개(추천 답변 방향 포함) + 보고서가 말하지 않은 것 3가지 반환</pre>
       <button class="copy-btn" onclick="copyPrompt('p2a', this)">복사</button>
     </div>
 
-    <div class="prompt-label">📋 프롬프트 2 — 실제 보고서 분석 요청 (보고서 내용 붙여넣기)</div>
+    <div class="prompt-label">📋 프롬프트 2 — 에이전트 3명 동시 실행 (병렬 분석)</div>
     <div class="prompt-wrap">
-      <pre class="prompt-box" id="p2b"><span class="comment"># 보고서 분석 요청 — 아래 [보고서 내용]을 실제 내용으로 교체하세요</span>
+      <pre class="prompt-box" id="p2b"><span class="comment"># 전문가 3명을 동시에 실행 — 각자 다른 시각으로 병렬 분석</span>
 
-다음 보고서를 분석해주세요:
-
-[보고서 내용을 여기에 붙여넣기]
+즉시대응분석가, 리스크탐지자, 경영자문가를 <span class="highlight">동시에</span> 실행해줘.
+아래 보고서를 각 에이전트에게 전달하고,
+세 결과를 통합한 HTML 보고서를 만들어 브라우저로 열어줘.
 
 ---
-예시) 2026년 1분기 실적 보고서
-- 매출: 3,200억 원 (전년 동기 대비 +8.3%)
-- 영업이익: 280억 원 (전년 동기 대비 -2.1%)
-- 주요 원인: 원자재 가격 상승, 인건비 증가
-- 신약 파이프라인: 3건 임상 2상 진행 중
-- 하반기 전망: 신제품 출시 2건 예정</pre>
+2026년 1분기 경영실적 보고서 (요약)
+- 매출: 3,412억 원 (+8.3%) / 영업이익: 271억 원 (-2.1%)
+- 펙수클루 처방 건수 전월 대비 +18% 급증, 글로벌 라이선스 협상 2건 진행 중
+- 나보타 FDA 재심사 결과 6월 말 예정
+- API 원자재 가격 +15.3% 상승, 인건비 +9.1% 증가
+- 연간 목표 7,200억 원 — 달성 경로 재조정 필요</pre>
       <button class="copy-btn" onclick="copyPrompt('p2b', this)">복사</button>
     </div>
 
-    <div class="prompt-label">📋 프롬프트 3 — 심화 분석 요청</div>
+    <div class="prompt-label">📋 프롬프트 3 — 개별 에이전트 단독 호출 (@멘션)</div>
     <div class="prompt-wrap">
-      <pre class="prompt-box" id="p2c"><span class="comment"># 특정 이슈 심층 분석</span>
+      <pre class="prompt-box" id="p2c"><span class="comment"># 특정 에이전트 단독 호출 — @멘션으로 바로 지목</span>
 
-방금 요약에서 <span class="highlight">영업이익 감소</span> 부분이 마음에 걸립니다.
-이 부분에 대해 좀 더 깊이 분석해주세요:
+@즉시대응분석가
 
-1. 이 수준의 영업이익 감소가 업계에서 심각한 수준인가요?
-2. 단기 원인인가요, 구조적 문제인가요?
-3. 회의에서 담당 임원에게 어떻게 물어봐야 효과적일까요?</pre>
+오늘 오전에 받은 아래 보고서에서
+지금 당장 대응해야 할 이슈를 찾아줘.
+
+[보고서 내용을 여기에 붙여넣기]</pre>
       <button class="copy-btn" onclick="copyPrompt('p2c', this)">복사</button>
     </div>
 
     <div class="result-box">
-      <div class="result-title">✅ 활용 팁</div>
+      <div class="result-title">✅ 핵심 포인트</div>
       <ul>
-        <li>한 번 설정해두면 계속 이어서 사용 가능합니다</li>
-        <li>회의 전날 저녁, 보고서를 붙여넣기만 해도 준비 완료</li>
-        <li>PDF는 텍스트를 복사해서 붙여넣기 하세요</li>
-        <li><strong>이 에이전트를 저장해두면 매번 재활용할 수 있습니다</strong></li>
+        <li><strong>.claude/agents/ 폴더에 3개 파일이 생성됩니다</strong> — 파일 탐색기로 직접 확인 가능</li>
+        <li>각 에이전트는 <strong>독립된 컨텍스트 창</strong>에서 실행 — 서로 영향을 주지 않음</li>
+        <li>@멘션으로 특정 에이전트만 단독 호출하거나, 한 번에 3명 동시 실행 모두 가능</li>
+        <li>팀원과 프로젝트 폴더를 공유하면 같은 전문가 팀을 함께 사용합니다</li>
       </ul>
     </div>
   </div>

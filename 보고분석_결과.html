@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보고분석 결과 — 코리아메디텍 상반기 경영현황</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    background: #F5F4F1;
+    color: #1A1815;
+    line-height: 1.6;
+  }
+
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ── 헤더 ── */
+  .report-header {
+    background: #1A1815;
+    color: #fff;
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .report-header h1 { font-size: 22px; font-weight: 800; line-height: 1.3; }
+  .report-header .sub { font-size: 13px; color: #aaa; margin-top: 6px; }
+  .badge-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .badge {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px; font-weight: 700;
+  }
+  .badge .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+
+  /* ── 섹션 공통 ── */
+  .section { border-radius: 14px; padding: 28px 32px; margin-bottom: 24px; }
+  .section-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+  .section-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; }
+
+  /* ── 즉시대응 (주황) ── */
+  .s-urgent { background: #FFF8F0; border: 1.5px solid #F59E0B; }
+  .s-urgent .section-label { color: #B45309; }
+  .s-urgent .section-title { color: #92400E; }
+
+  .issue-card {
+    background: #fff;
+    border-radius: 10px;
+    border-left: 4px solid #F59E0B;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .issue-card:last-child { margin-bottom: 0; }
+  .issue-title {
+    font-size: 15px; font-weight: 800; color: #1A1815;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .priority-badge {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+  }
+  .p1 { background: #FEF3C7; color: #92400E; }
+  .p2 { background: #FEE2E2; color: #991B1B; }
+
+  .issue-row { display: flex; gap: 12px; margin-bottom: 8px; align-items: flex-start; }
+  .issue-row-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    color: #B45309; background: #FEF3C7; border-radius: 4px;
+    padding: 2px 7px; white-space: nowrap; margin-top: 2px; flex-shrink: 0;
+  }
+  .issue-row-body { font-size: 13px; color: #374151; }
+  .action-list { display: flex; flex-direction: column; gap: 4px; }
+  .action-item { font-size: 13px; color: #374151; display: flex; gap: 6px; }
+  .action-num { font-weight: 800; color: #F59E0B; flex-shrink: 0; }
+  .damage-text { font-size: 13px; color: #DC2626; font-weight: 600; }
+
+  /* ── 리스크 (빨강) ── */
+  .s-risk { background: #FFF1F2; border: 1.5px solid #F43F5E; }
+  .s-risk .section-label { color: #BE123C; }
+  .s-risk .section-title { color: #881337; }
+
+  .risk-card {
+    background: #fff;
+    border-radius: 10px;
+    border-left: 4px solid #F43F5E;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .risk-card:last-child { margin-bottom: 0; }
+  .risk-title {
+    font-size: 15px; font-weight: 800; color: #1A1815;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .prob-badge {
+    font-size: 12px; font-weight: 800;
+    background: #FEE2E2; color: #DC2626;
+    padding: 2px 10px; border-radius: 20px;
+  }
+  .risk-row { display: flex; gap: 12px; margin-bottom: 8px; align-items: flex-start; }
+  .risk-row-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    color: #BE123C; background: #FFE4E6; border-radius: 4px;
+    padding: 2px 7px; white-space: nowrap; margin-top: 2px; flex-shrink: 0;
+  }
+  .risk-row-body { font-size: 13px; color: #374151; }
+  .prevention-text { font-size: 13px; color: #065F46; font-weight: 600; }
+
+  /* ── 경영자문 (초록) ── */
+  .s-advisor { background: #F0FDF4; border: 1.5px solid #22C55E; }
+  .s-advisor .section-label { color: #15803D; }
+  .s-advisor .section-title { color: #14532D; }
+
+  .qa-block { margin-bottom: 16px; }
+  .qa-block:last-child { margin-bottom: 0; }
+  .q-text {
+    font-size: 14px; font-weight: 700; color: #1A1815;
+    background: #fff;
+    border-left: 4px solid #22C55E;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .q-num { color: #15803D; margin-right: 6px; }
+  .a-text {
+    font-size: 13px; color: #374151;
+    background: #DCFCE7;
+    border-radius: 0 8px 8px 0;
+    border-left: 4px solid #86EFAC;
+    padding: 10px 16px;
+    margin-left: 12px;
+  }
+  .a-label { font-size: 10px; font-weight: 700; color: #15803D; margin-bottom: 3px; letter-spacing: 0.08em; }
+
+  .unsaid-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px; }
+  @media (max-width: 640px) { .unsaid-grid { grid-template-columns: 1fr; } }
+  .unsaid-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1.5px solid #BBF7D0;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .unsaid-title {
+    font-size: 13px; font-weight: 800; color: #14532D;
+    margin-bottom: 8px; display: flex; gap: 6px;
+  }
+  .unsaid-icon { color: #22C55E; font-size: 15px; }
+  .unsaid-body { font-size: 12px; color: #4B5563; line-height: 1.6; }
+
+  /* ── 교차점 ── */
+  .s-cross {
+    background: #1A1815; color: #fff;
+    border-radius: 14px; padding: 28px 32px; margin-bottom: 24px;
+  }
+  .s-cross .section-label { color: #F59E0B; }
+  .s-cross .section-title { color: #fff; }
+  .cross-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .cross-grid { grid-template-columns: 1fr; } }
+  .cross-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .cross-card-title { font-size: 13px; font-weight: 800; color: #F59E0B; margin-bottom: 8px; }
+  .cross-card-body { font-size: 13px; color: #D1D5DB; line-height: 1.6; }
+
+  /* ── 푸터 ── */
+  .footer {
+    text-align: center; font-size: 12px; color: #9CA3AF; margin-top: 16px;
+  }
+
+  /* ── 구분선 ── */
+  .divider { border: none; border-top: 1.5px solid #E5E3DE; margin: 20px 0; }
+
+  @media print {
+    body { background: #fff; }
+    .page { padding: 15mm; }
+    .section { break-inside: avoid; }
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 헤더 -->
+  <div class="report-header">
+    <div>
+      <div class="sub">코리아메디텍 주식회사 · 가상 예시 자료</div>
+      <h1>2026년 상반기 경영현황<br>AI 전문가 3인 병렬 분석 결과</h1>
+      <div class="sub" style="margin-top:10px;">분석일: 2026년 6월 29일</div>
+    </div>
+    <div class="badge-group">
+      <div class="badge"><div class="dot" style="background:#F59E0B;"></div> 즉시대응분석가</div>
+      <div class="badge"><div class="dot" style="background:#F43F5E;"></div> 리스크탐지자</div>
+      <div class="badge"><div class="dot" style="background:#22C55E;"></div> 경영자문가</div>
+    </div>
+  </div>
+
+  <!-- ⚡ 즉시대응 -->
+  <div class="section s-urgent">
+    <div class="section-label">⚡ AGENT 1 · 즉시대응분석가</div>
+    <div class="section-title">24~48시간 내 반드시 대응할 이슈</div>
+
+    <!-- 이슈 1 -->
+    <div class="issue-card">
+      <div class="issue-title">
+        <span class="priority-badge p1">우선순위 1</span>
+        국내 유통 파트너 C사 계약 미서명 — 만료 D-1
+      </div>
+      <div class="issue-row">
+        <div class="issue-row-label">긴급 이유</div>
+        <div class="issue-row-body">계약 만료일 6월 30일, 보고서 기준 <strong>불과 1일 후</strong>. 최종 협상 단계임에도 미서명 상태. 24시간 이내 서명하지 않으면 법적 공백 발생.</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-row-label">대응 행동</div>
+        <div class="action-list">
+          <div class="action-item"><span class="action-num">①</span> 오늘 중 C사 담당자와 긴급 연락, 전자계약 방식으로 금일 내 서명 확정</div>
+          <div class="action-item"><span class="action-num">②</span> 법무팀과 협력, 계약 만료 시 임시 연장(LOI/MOU) 가능 여부 즉시 검토</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-row-label">미대응 피해</div>
+        <div class="damage-text">내수 유통 채널 공백 → 하반기 매출 직격. 이미 점유율 32%→24% 하락한 진단키트 사업부 추가 타격. 경쟁사 유통망 선점 기회 제공.</div>
+      </div>
+    </div>
+
+    <!-- 이슈 2 -->
+    <div class="issue-card">
+      <div class="issue-title">
+        <span class="priority-badge p2">우선순위 2</span>
+        FDA 제조시설 실사(7월 7일) — 미완료 항목 48시간 내 완료 필요
+      </div>
+      <div class="issue-row">
+        <div class="issue-row-label">긴급 이유</div>
+        <div class="issue-row-body">실사 예정 <strong>7월 7일 (8일 후)</strong>. 미완료 항목: 설비 교정 기록 3건 + 위험관리 문서 2건 = 5건. 보고서 건의사항에 "48시간 내 완료 지시 요청" 명기.</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-row-label">대응 행동</div>
+        <div class="action-list">
+          <div class="action-item"><span class="action-num">①</span> 미완료 5건 담당자 지정 + 48시간 내 완료 기한·책임자 문서화</div>
+          <div class="action-item"><span class="action-num">②</span> 실사 대응팀장에 일일 보고 지시, 실사 전날 모의 실사(Mock Audit) 1회 실시</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-row-label">미대응 피해</div>
+        <div class="damage-text">FDA Warning Letter 발행 시 미국 수출 계약 180억 원 무산 직접 위협. 하반기 목표(2,050억) 달성 전제 조건 붕괴 → 연간 목표(3,874억) 직격.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔍 리스크 -->
+  <div class="section s-risk">
+    <div class="section-label">🔍 AGENT 2 · 리스크탐지자</div>
+    <div class="section-title">보고서가 드러내지 않은 잠재 리스크</div>
+
+    <!-- 리스크 1 -->
+    <div class="risk-card">
+      <div class="risk-title">
+        <span class="prob-badge">85%</span>
+        유통 파트너 C사 계약 공백으로 인한 내수 매출 절벽
+      </div>
+      <div class="risk-row">
+        <div class="risk-row-label">단서</div>
+        <div class="risk-row-body">만료 3일 전 미서명 상태 — 단순 행정 지연이 아닌 실질적 협상 이견 신호. 계약 단가·기간 변경 내용 일절 미기재.</div>
+      </div>
+      <div class="risk-row">
+        <div class="risk-row-label">차단 방법</div>
+        <div class="prevention-text">48시간 내 이사회에서 양보 상한 사전 승인 → 대표이사가 C사 의사결정권자와 직접 면담. 플랜B(임시 계약 또는 직접 공급) 동시 준비.</div>
+      </div>
+    </div>
+
+    <!-- 리스크 2 -->
+    <div class="risk-card">
+      <div class="risk-title">
+        <span class="prob-badge">75%</span>
+        FDA 실사 부적합 판정 → 수출 계약 180억 원 연쇄 무산
+      </div>
+      <div class="risk-row">
+        <div class="risk-row-label">단서</div>
+        <div class="risk-row-body">하반기 목표가 "FDA 수출 계약 체결(180억) 전제"이나, 실사 실패 시나리오는 전망 섹션에 전혀 없음. FDA 510(k) 계약 상대방은 실사 결과를 선행 조건으로 요구하는 것이 일반적.</div>
+      </div>
+      <div class="risk-row">
+        <div class="risk-row-label">차단 방법</div>
+        <div class="prevention-text">외부 FDA 컨설턴트 긴급 투입, 72시간 내 미완료 5건 완결 + Mock Inspection 1회. Warning Letter 발행 시 계약 지연 3~6개월 이상.</div>
+      </div>
+    </div>
+
+    <!-- 리스크 3 -->
+    <div class="risk-card">
+      <div class="risk-title">
+        <span class="prob-badge">70%</span>
+        매출 성장의 허수 — 라이선스 수익 소멸 후 하반기 역성장 노출
+      </div>
+      <div class="risk-row">
+        <div class="risk-row-label">단서</div>
+        <div class="risk-row-body">라이선스료 312억 제외 시 경상 매출 -1.9% 역성장. 하반기 목표가 CMO 신규 수주 300억 + FDA 수출 180억이라는 불확실 변수 두 개에 동시 의존.</div>
+      </div>
+      <div class="risk-row">
+        <div class="risk-row-label">차단 방법</div>
+        <div class="prevention-text">시나리오별 매출 하단(Floor)을 이사회에 공시. CMO 단가 인하 수용 결정을 조속히 확정, 진단키트 경상 매출 반등 전략 병행 수립.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💼 경영자문 -->
+  <div class="section s-advisor">
+    <div class="section-label">💼 AGENT 3 · 경영자문가</div>
+    <div class="section-title">CEO 예상 질문 5가지</div>
+
+    <div class="qa-block">
+      <div class="q-text"><span class="q-num">Q1.</span> 매출 +18.4%라지만 라이선스료 312억 제외 시 경상 매출 -1.9%. 이 회사 본업은 지금 성장 중인가, 수축 중인가?</div>
+      <div class="a-text"><div class="a-label">→ 답변 방향</div>경상 매출 역성장을 솔직히 인정하되, CMO 신규 수주와 FDA 수출 계약의 가시화 시점·확률을 구체적으로 제시. 두 전제 중 하나라도 불발 시 미달 시나리오와 대응 방안도 함께 제시.</div>
+    </div>
+    <div class="qa-block">
+      <div class="q-text"><span class="q-num">Q2.</span> CMO 주계약이 7월 31일 만료, 단가 12% 인하 요구를 수용하면 이익에 얼마나 타격인가? 거절하면 계약이 끊기나?</div>
+      <div class="a-text"><div class="a-label">→ 답변 방향</div>단가 12% 인하 시 전사 이익 감소 수치 시뮬레이션 이사회 전 준비. 가동률 88%·숙련 인력 부족 상황에서 계약 유지가 생산역량 유지 차원에서도 전략적으로 중요함을 논리화.</div>
+    </div>
+    <div class="qa-block">
+      <div class="q-text"><span class="q-num">Q3.</span> FDA 실사 10일 후인데 미완료 항목이 아직 있다는 게 사실인가? 수출 계약 180억이 날아갈 수도 있는 것 아닌가?</div>
+      <div class="a-text"><div class="a-label">→ 답변 방향</div>잔여 미완료 5건의 완료 기한·책임자를 지금 바로 확정 보고. 실사 결과와 수출 계약 의존 관계 명시, 최악 시나리오 대응 플랜 함께 제시.</div>
+    </div>
+    <div class="qa-block">
+      <div class="q-text"><span class="q-num">Q4.</span> 핵심 원자재 72%를 중국 단일 공급사에 의존, 재고 6주치. 공급이 끊기면 언제부터 생산이 멈추나? 대체 공급사 "완료 예정 미정"은 납득 어렵다.</div>
+      <div class="a-text"><div class="a-label">→ 답변 방향</div>6주 재고는 보험이 아닌 위기 카운트다운임을 인식. 이중 공급망 구축 예산 15억을 이번 보고에서 즉시 결정사항으로 상정. 대체 공급사 확보 목표 시점 구체화(예: 8월 말).</div>
+    </div>
+    <div class="qa-block">
+      <div class="q-text"><span class="q-num">Q5.</span> AutoDX-7 특허 2027년 11월 만료, R&D 투자는 5.2%→3.7%로 감소. DX-Next 외부 업데이트 2024년 11월 이후 없음. 특허 절벽 대책이 있나?</div>
+      <div class="a-text"><div class="a-label">→ 답변 방향</div>특허 만료까지 17개월 안에 AutoDX-9 시장 안착 가능한지 타임라인 제시. DX-Next의 현재 기술 수준과 상업화 목표 시점을 명확히 답해야 함.</div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-label" style="margin-bottom:12px;">🔇 보고서가 말하지 않은 것 3가지</div>
+    <div class="unsaid-grid">
+      <div class="unsaid-card">
+        <div class="unsaid-title"><span class="unsaid-icon">①</span> C사 계약 만료의 실제 손실 규모</div>
+        <div class="unsaid-body">계약이 불발될 경우 하반기 내수 매출에 미치는 금액 영향이 전무. CEO가 이것이 10억짜리 문제인지 200억짜리 문제인지 알 수 없음.</div>
+      </div>
+      <div class="unsaid-card">
+        <div class="unsaid-title"><span class="unsaid-icon">②</span> 영업이익률 하락의 원인 분해</div>
+        <div class="unsaid-body">매출 +18%, 이익 -12% — 어느 비용이 구조적으로 증가했는지 없음. "비용 효율화 추진 중"만으로는 일시적인지 고착화인지 판단 불가.</div>
+      </div>
+      <div class="unsaid-card">
+        <div class="unsaid-title"><span class="unsaid-icon">③</span> 유럽 MDR 미전환 2개 제품의 9월 이후 공백</div>
+        <div class="unsaid-body">9월 30일 기한 초과 시 CE 인증 2개 제품 유럽 판매 중단. 해당 제품의 유럽 매출 규모와 하반기 목표 타격 금액이 일절 없음.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 교차점 -->
+  <div class="s-cross">
+    <div class="section-label">🎯 세 분석의 교차점</div>
+    <div class="section-title" style="margin-bottom:20px;">3명이 공통으로 지적한 핵심 시사점</div>
+    <div class="cross-grid">
+      <div class="cross-card">
+        <div class="cross-card-title">🔴 이번 주가 분기점</div>
+        <div class="cross-card-body">C사 계약(6/30)·FDA 미완료 항목(48h)이 이번 주 내 해결되지 않으면 하반기 목표 달성의 전제 조건이 동시에 무너진다.</div>
+      </div>
+      <div class="cross-card">
+        <div class="cross-card-title">🟡 숫자가 숨긴 역성장</div>
+        <div class="cross-card-body">+18.4% 성장률은 일회성 라이선스료 착시다. 경상 매출은 -1.9%. 하반기 목표 역시 두 개의 불확실 전제 위에 세워진 낙관 시나리오다.</div>
+      </div>
+      <div class="cross-card">
+        <div class="cross-card-title">🟠 18개월 후 구조적 위기</div>
+        <div class="cross-card-body">특허 만료(2027.11) + R&D 투자 감소 + 후속 제품 지연이 맞물리면 2027년 말부터 주력 매출이 구조적으로 붕괴된다. 지금이 마지막 선제 대응 시점이다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    코리아메디텍 상반기 경영현황 보고서 · AI 전문가 3인 병렬 분석 · 2026년 6월 29일<br>
+    즉시대응분석가 · 리스크탐지자 · 경영자문가 동시 실행
+  </div>
+
+</div>
+</body>
+</html>
